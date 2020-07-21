@@ -20,6 +20,8 @@ services:
     volumes:
       - ./client.sh:/opt/client.sh
       - ./rosnode:/opt/rosws/src/rosnode
+    env_file:
+      - .env
     depends_on:
       - master
   terminal:
