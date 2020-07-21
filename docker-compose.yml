@@ -1,0 +1,34 @@
+version: "3"
+
+networks:
+  rosnet:
+
+services:
+  master:
+    image: "ros:kinetic"
+    networks:
+      - rosnet
+    command: "roscore"
+  bridge:
+    image: "ros:kinetic-python3"
+    networks:
+      - rosnet
+    tty: true
+    environment:
+      - ROS_HOSTNAME=bridge
+      - ROS_MASTER_URI=http://master:11311
+    volumes:
+      - ./client.sh:/opt/client.sh
+      - ./rosnode:/opt/rosws/src/rosnode
+    depends_on:
+      - master
+  terminal:
+    image: "nmatsui/ros-kinetic:0.0.1"
+    networks:
+      - rosnet
+    tty: true
+    environment:
+      - ROS_HOSTNAME=terminal
+      - ROS_MASTER_URI=http://master:11311
+    depends_on:
+      - master
