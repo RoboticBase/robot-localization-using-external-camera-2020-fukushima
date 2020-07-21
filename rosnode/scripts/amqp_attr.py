@@ -7,11 +7,11 @@ from std_msgs.msg import Float32
 
 from proton.reactor import Container
 
-from amqp_sender import Sender
+from sender import Sender
 
 
 def main():
-    rospy.init_node('amqpproducer', anonymous=True, disable_signals=True)
+    rospy.init_node('amqp_attr', anonymous=True, disable_signals=True)
     sender = Sender()
 
     count = 0
@@ -27,7 +27,7 @@ def main():
         }
         msg = json.dumps(d)
         sender.send(msg)
-    rospy.Subscriber("/chatter", Float32, callback)
+    rospy.Subscriber("/attr", Float32, callback)
 
     def handler(signum, frame):
         rospy.loginfo('shutting down...')

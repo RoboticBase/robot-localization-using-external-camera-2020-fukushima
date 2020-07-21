@@ -5,9 +5,9 @@ import rospy
 from std_msgs.msg import Float32
 
 def talker():
-    pub = rospy.Publisher('chatter', Float32, queue_size=10)
-    rospy.init_node('talker', anonymous=True)
-    r = rospy.Rate(1) # 10hz
+    pub = rospy.Publisher('/attr', Float32, queue_size=10)
+    rospy.init_node('ros_attr', anonymous=True)
+    r = rospy.Rate(1)
     while not rospy.is_shutdown():
         temperature = random.uniform(0.0, 40.0)
         rospy.loginfo('temperature=%f', temperature)

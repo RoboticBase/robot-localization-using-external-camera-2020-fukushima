@@ -16,7 +16,8 @@ AMQP_SENDER_PASSWORD = os.environ.get('AMQP_SENDER_PASSWORD', '')
 class Sender(MessagingHandler):
     def __init__(self):
         super().__init__()
-        self.event = None
+        self.connection = None
+        self.sender = None
         self.count = 0
 
     def on_start(self, event):
@@ -29,19 +30,21 @@ class Sender(MessagingHandler):
         }
         scheme = 'amqps' if AMQP_USE_TLS else 'amqp'
         url = '{}://{}:{}'.format(scheme, AMQP_HOST, AMQP_PORT)
-        conn = event.container.connect(url, **sender_options)
-        event.container.create_sender(conn, AMQP_SEND_QUEUE)
+        self.connection = event.container.connect(url, **sender_options)
+        event.container.create_sender(self.connection, AMQP_SEND_QUEUE)
 
     def on_sendable(self, event):
-        if self.event is None:
+        if self.sender is None:
             rospy.loginfo('Sender on_sendable')
-            self.event = event
+            self.sender = event.sender
 
     def send(self, msg):
-        if self.event is not None:
+        if self.sender is not None:
             rospy.loginfo('send a message, %s', msg)
-            self.event.sender.send(Message(body=msg))
+            self.sender.send(Message(body=msg))
 
     def shutdown(self):
-        self.event.sender.close()
-        self.event.connection.close()
+        if self.sender is not None:
+            self.sender.close()
+        if self.connection is not None:
+            self.connection.close()
