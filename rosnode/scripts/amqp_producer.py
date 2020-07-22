@@ -3,7 +3,7 @@ import json
 import signal
 
 import rospy
-from std_msgs.msg import Float32
+from std_msgs.msg import Float32, String
 
 from proton.reactor import Container
 
@@ -15,9 +15,9 @@ def main():
     sender = Sender()
 
     count = 0
-    def callback(data):
+    def attr_cb(data):
         nonlocal count
-        rospy.loginfo('subscribe a message, %f', data.data)
+        rospy.loginfo('subscribe an attr message, %f', data.data)
         count += 1
         d = {
             'attrs': {
@@ -25,9 +25,18 @@ def main():
                 'temperature': data.data,
             }
         }
-        msg = json.dumps(d)
-        sender.send(msg)
-    rospy.Subscriber("/attr", Float32, callback)
+        sender.send(json.dumps(d))
+    rospy.Subscriber('/attr', Float32, attr_cb)
+
+    def cmdexe_cb(data):
+        rospy.loginfo('subscribe a cmdexe message, %s', data.data)
+        d = {
+            'cmdexe': {
+                'open': data.data
+            }
+        }
+        sender.send(json.dumps(d))
+    rospy.Subscriber('/cmdexe', String, cmdexe_cb)
 
     def handler(signum, frame):
         rospy.loginfo('shutting down...')
