@@ -32,5 +32,7 @@ services:
     environment:
       - ROS_HOSTNAME=terminal
       - ROS_MASTER_URI=http://master:11311
+    volumes:
+      - ./rosnode:/opt/rosws/src/rosnode
     depends_on:
       - master
