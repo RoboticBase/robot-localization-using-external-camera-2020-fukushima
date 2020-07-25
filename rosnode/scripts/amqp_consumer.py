@@ -7,7 +7,7 @@ from std_msgs.msg import String
 
 from proton.reactor import Container
 
-from receiver import Receiver
+from consumer import Consumer
 
 
 def main():
@@ -15,15 +15,15 @@ def main():
     pub = rospy.Publisher('/cmd', String, queue_size=10)
 
     def on_message(msg):
-        pub.publish(msg.body)
-    receiver = Receiver(on_message)
+        pub.publish(msg)
+    consumer = Consumer(on_message)
 
     def handler(signum, frame):
         rospy.loginfo('shutting down...')
-        receiver.shutdown()
+        consumer.shutdown()
     signal.signal(signal.SIGINT, handler)
 
-    Container(receiver).run()
+    Container(consumer).run()
     rospy.signal_shutdown('finish')
 
 

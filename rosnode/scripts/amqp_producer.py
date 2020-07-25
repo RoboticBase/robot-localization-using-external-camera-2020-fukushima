@@ -7,12 +7,12 @@ from std_msgs.msg import Float32, String
 
 from proton.reactor import Container
 
-from sender import Sender
+from producer import Producer
 
 
 def main():
     rospy.init_node('amqp_attr', anonymous=True, disable_signals=True)
-    sender = Sender()
+    producer = Producer()
 
     count = 0
     def attr_cb(data):
@@ -25,7 +25,7 @@ def main():
                 'temperature': data.data,
             }
         }
-        sender.send(json.dumps(d))
+        producer.send(json.dumps(d))
     rospy.Subscriber('/attr', Float32, attr_cb)
 
     def cmdexe_cb(data):
@@ -35,15 +35,15 @@ def main():
                 'open': data.data
             }
         }
-        sender.send(json.dumps(d))
+        producer.send(json.dumps(d))
     rospy.Subscriber('/cmdexe', String, cmdexe_cb)
 
     def handler(signum, frame):
         rospy.loginfo('shutting down...')
-        sender.shutdown()
+        producer.shutdown()
     signal.signal(signal.SIGINT, handler)
 
-    Container(sender).run()
+    Container(producer).run()
     rospy.signal_shutdown('finish')
 
 
