@@ -1,7 +1,13 @@
 #!/bin/bash
 
 source /root/.bashrc
-/root/.pyenv/shims/pip install PyYAML rospkg
-/root/.pyenv/shims/pip install python-qpid-proton
+apt install -y build-essential pkg-config libssl-dev openssl swig
+export LDFLAGS="-L/usr/lib"
+export CFLAGS="-I/usr/include/openssl"
+export CPPFLAGS="-I/usr/include/openssl"
+export PKG_CONFIG_PATH="/usr/lib/pkgconfig"
+/root/.pyenv/shims/pip install --upgrade pip
+/root/.pyenv/shims/pip install PyYAML rospkg --no-cache-dir
+/root/.pyenv/shims/pip install python-qpid-proton --no-cache-dir
 
 sleep infinity
