@@ -1,12 +1,10 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 import rospy
-import numpy as np
 import cv2
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge
 
-NODE_NAME = 'camera'
 
 def main():
     try:
@@ -33,6 +31,7 @@ def main():
 
 if __name__ == '__main__':
     try:
+        NODE_NAME = 'camera'
         main()
     except KeyboardInterrupt:
         pass
