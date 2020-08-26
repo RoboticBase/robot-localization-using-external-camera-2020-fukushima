@@ -14,7 +14,6 @@ def main():
         pub = rospy.Publisher("image_raw", Image, queue_size=10)
         r = rospy.Rate(10)
         bridge = CvBridge()
-        file_path = rospy.get_param("calibration_path")
         cap = cv2.VideoCapture(0)
         cap.set(cv2.CAP_PROP_FPS, 10)
         cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
