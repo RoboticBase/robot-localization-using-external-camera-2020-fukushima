@@ -67,6 +67,7 @@ def callback(msg):
         pub_data(rvecs, tvecs)
         image_message = bridge.cv2_to_imgmsg(cv_image, encoding="bgr8")
         pub.publish(image_message)
+
 def main():
     try:
         rospy.init_node(NODE_NAME)
