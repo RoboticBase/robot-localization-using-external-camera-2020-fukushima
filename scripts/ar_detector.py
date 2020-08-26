@@ -49,7 +49,6 @@ def draw_marker(frame, ids, mtx, dist, rvecs, tvecs):
         T = tvecs[np.newaxis, :].T
         proj_matrix = np.hstack((R, T))
         euler_angle = cv2.decomposeProjectionMatrix(proj_matrix)[6] # [deg]
-        print(tvecs, euler_angle)
         cv2.putText(frame, "X: %.1f cm" % (tvecs[0] * 100),  (0, 30), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0, 0, 0))
         cv2.putText(frame, "Y: %.1f cm" % (tvecs[1] * 100),  (0, 60), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0, 0, 0))
         cv2.putText(frame, "Z: %.1f cm" % (tvecs[2] * 100),  (0, 90), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0, 0, 0))
