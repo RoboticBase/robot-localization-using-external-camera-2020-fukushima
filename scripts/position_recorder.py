@@ -22,9 +22,6 @@ def PoseStampedToText(count, msg):
     return buf
 
 def report():
-    global path
-    global pose_file
-    global ar_file
     global count
     msg1 = rospy.wait_for_message("/amcl_pose", PoseWithCovarianceStamped)
     msg2 = rospy.wait_for_message("/image_raw", Image)
@@ -32,7 +29,6 @@ def report():
     buf = PoseStampedToText(count, msg1.pose)
     with open(pose_file, mode='a') as f:
         f.write(buf)
-    bridge = CvBridge()
     cv_image = bridge.imgmsg_to_cv2(msg2, desired_encoding='bgr8')
     cv2.imwrite(path + "/%03.f"%(count)+".png", cv_image)
     buf = PoseStampedToText(count, msg3)
@@ -59,6 +55,7 @@ def main():
 if __name__ == '__main__':
     try:
         NODE_NAME = 'position_recorder'
+        bridge = CvBridge()
         file_path = rospy.get_param("file_path")
         prev_status = 0
         path = file_path + '/Pose_' + datetime.datetime.now().strftime('%Y-%m-%d_%H%M%S')
