@@ -6,7 +6,7 @@ from sensor_msgs.msg import Image
 from cv_bridge import CvBridge
 
 def callback(msg):
-    bridge = CvBridge()
+
     cv_image = bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
     dst = cv2.undistort(cv_image, intrinsic, distortion)
     image_message = bridge.cv2_to_imgmsg(dst, encoding="bgr8")
@@ -23,6 +23,7 @@ def main():
 if __name__ == '__main__':
     try:
         NODE_NAME = 'calibration'
+        bridge = CvBridge()
         pub = rospy.Publisher("calib_image", Image, queue_size=10)
         fs = cv2.FileStorage(rospy.get_param("calibration_path"), cv2.FILE_STORAGE_READ)
         intrinsic = fs.getNode("intrinsic").mat()

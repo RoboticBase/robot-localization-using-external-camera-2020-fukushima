@@ -5,7 +5,6 @@ import cv2
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge
 
-
 def main():
     try:
         rospy.init_node(NODE_NAME)
@@ -17,7 +16,6 @@ def main():
         cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
         cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
         ret, frame = cap.read()
-
         while not rospy.is_shutdown():
             if ret == False:
                 break
