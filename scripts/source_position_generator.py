@@ -58,9 +58,9 @@ if __name__ == '__main__':
         bridge = CvBridge()
         file_path = rospy.get_param("file_path")
         prev_status = 0
-        path = file_path + '/Pose_' + datetime.datetime.now().strftime('%Y-%m-%d_%H%M%S')
-        pose_file = path + '/pose.csv'
-        ar_file = path + '/ar.csv'
+        path = file_path + 'Pose_' + datetime.datetime.now().strftime('%Y-%m-%d_%H%M%S') + '/'
+        pose_file = path + 'pose.csv'
+        ar_file = path + 'ar.csv'
         count = 0
         if not os.path.exists(path):
             os.mkdir(path)
