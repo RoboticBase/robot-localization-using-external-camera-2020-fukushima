@@ -54,7 +54,7 @@ def main():
 
 if __name__ == '__main__':
     try:
-        NODE_NAME = 'position_recorder'
+        NODE_NAME = 'source_position_generator'
         bridge = CvBridge()
         file_path = rospy.get_param("file_path")
         prev_status = 0
