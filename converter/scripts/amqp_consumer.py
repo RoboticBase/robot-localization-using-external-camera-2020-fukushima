@@ -4,7 +4,7 @@ import signal
 
 import rospy
 from geometry_msgs.msg import Point
-from uoa_poc3_msgs.msg import r_command, r_pose_optional, r_angle_optional, r_angle, r_costmap, r_pose
+from uoa_poc3_msgs.msg import r_navi_command, r_pose_optional, r_angle_optional, r_angle, r_costmap, r_pose
 
 from proton.reactor import Container
 from PIL import Image, ImageDraw
@@ -14,7 +14,7 @@ from consumer import Consumer
 FREE = 0
 OBSTACLE = 254
 
-CMD_NAME = 'cmd'  # FIXME
+CMD_NAME = 'open'  # FIXME
 ENTITY_TYPE = 'robot'  # FIXME
 ENTITY_ID = 'robot01'  # FIXME
 RESOLUTION = 0.1  # FIXME
@@ -35,7 +35,7 @@ ORIGIN = {
 RADIUS = 0.6  # FIXME
 
 
-class Command:
+class NaviCommand:
     def __init__(self, publisher):
         self._publisher = publisher
         self._cmd_name = CMD_NAME
@@ -48,10 +48,10 @@ class Command:
         self._radius = RADIUS
 
     def command_cb(self, msg):
-        rospy.loginfo('consume a command message, %s', msg)
+        rospy.loginfo('consume a navi command message, %s', msg)
         try:
             message = json.loads(msg)
-            body = message[self._cmd_name]
+            body = message['cmd'][self._cmd_name]
             ros_published = self._process(body)
             rospy.loginfo('processed the command, %s', ros_published)
         except (ValueError, TypeError) as e:
@@ -113,7 +113,7 @@ class Command:
             ],
         }
 
-        command = r_command()
+        command = r_navi_command()
         command.id = self._entity_id
         command.type = self._entity_type
         command.time = body['time']
@@ -170,10 +170,10 @@ class Command:
 
 def main():
     rospy.init_node('amqpconsumer', anonymous=True, disable_signals=True)
-    pub = rospy.Publisher('/cmd', r_command, queue_size=10)
+    pub = rospy.Publisher('/navi_cmd', r_navi_command, queue_size=10)
 
-    command = Command(pub)
-    consumer = Consumer(command.command_cb)
+    naviCommand = NaviCommand(pub)
+    consumer = Consumer(naviCommand.command_cb)
 
     def handler(signum, frame):
         rospy.loginfo('shutting down...')
