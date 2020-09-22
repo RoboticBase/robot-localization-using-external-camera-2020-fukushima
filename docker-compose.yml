@@ -9,17 +9,18 @@ services:
     networks:
       - rosnet
     command: "roscore"
-  bridge:
+  converter:
     image: "ros:kinetic-python3"
     networks:
       - rosnet
     tty: true
     environment:
-      - ROS_HOSTNAME=bridge
+      - ROS_HOSTNAME=converter
       - ROS_MASTER_URI=http://master:11311
     volumes:
       - ./client.sh:/opt/client.sh
-      - ./rosnode:/opt/rosws/src/rosnode
+      - ./converter:/opt/rosws/src/converter
+      - ./uoa_poc3_msgs:/opt/rosws/src/uoa_poc3_msgs
     env_file:
       - .env
     depends_on:
@@ -33,6 +34,7 @@ services:
       - ROS_HOSTNAME=terminal
       - ROS_MASTER_URI=http://master:11311
     volumes:
-      - ./rosnode:/opt/rosws/src/rosnode
+      - ./test_client:/opt/rosws/src/test_client
+      - ./uoa_poc3_msgs:/opt/rosws/src/uoa_poc3_msgs
     depends_on:
       - master
