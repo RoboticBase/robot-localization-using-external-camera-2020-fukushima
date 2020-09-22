@@ -70,14 +70,12 @@ class NaviCommand:
                     'y': 1.001,
                     'z': 0.0,
                 },
-                'angle_optional': {
-                    'valid': False,
-                    'angle': {
-                        'roll': 0.0,
-                        'pitch': 0.0,
-                        'yaw': 12.3,
-                    }
-                }
+                'angle': {
+                    'roll': 0.0,
+                    'pitch': 0.0,
+                    'yaw': 12.3,
+                },
+                # 'angle': None,
             },
             'waypoints': [
                 {
@@ -120,12 +118,19 @@ class NaviCommand:
         command.cmd = body['cmd']
 
         angle = r_angle()
-        angle.roll = body['destination']['angle_optional']['angle']['roll']
-        angle.pitch = body['destination']['angle_optional']['angle']['pitch']
-        angle.yaw = body['destination']['angle_optional']['angle']['yaw']
         angle_optional = r_angle_optional()
-        angle_optional.valid = body['destination']['angle_optional']['valid']
-        angle_optional.angle = angle
+        if not body['destination']['angle']:
+            angle.roll = 0.0
+            angle.pitch = 0.0
+            angle.yaw = 0.0
+            angle_optional.valid = False
+            angle_optional.angle = angle
+        else:
+            angle.roll = body['destination']['angle']['roll']
+            angle.pitch = body['destination']['angle']['pitch']
+            angle.yaw = body['destination']['angle']['yaw']
+            angle_optional.valid = True
+            angle_optional.angle = angle
         point = Point()
         point.x = body['destination']['point']['x']
         point.y = body['destination']['point']['y']
