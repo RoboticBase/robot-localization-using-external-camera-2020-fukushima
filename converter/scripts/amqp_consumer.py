@@ -7,15 +7,19 @@ from geometry_msgs.msg import Point
 from uoa_poc3_msgs.msg import r_command, r_pose_optional, r_angle_optional, r_angle, r_costmap, r_pose
 
 from proton.reactor import Container
+from PIL import Image, ImageDraw
 
 from consumer import Consumer
+
+FREE = 0
+OBSTACLE = 254
 
 CMD_NAME = 'cmd'  # FIXME
 ENTITY_TYPE = 'robot'  # FIXME
 ENTITY_ID = 'robot01'  # FIXME
-RESOLUTION = 0.05  # FIXME
-WIDTH = 10  # FIXME
-HEIGHT = 10  # FIXME
+RESOLUTION = 0.1  # FIXME
+WIDTH = 100  # FIXME
+HEIGHT = 100  # FIXME
 ORIGIN = {
     'point': {
         'x': 1.0,
@@ -28,6 +32,7 @@ ORIGIN = {
         'yaw': 0.0,
     }
 }  # FIXME
+RADIUS = 0.6  # FIXME
 
 
 class Command:
@@ -36,6 +41,11 @@ class Command:
         self._cmd_name = CMD_NAME
         self._entity_type = ENTITY_TYPE
         self._entity_id = ENTITY_ID
+        self._resolution = RESOLUTION
+        self._width = WIDTH
+        self._height = HEIGHT
+        self._origin = ORIGIN
+        self._radius = RADIUS
 
     def command_cb(self, msg):
         rospy.loginfo('consume a command message, %s', msg)
@@ -77,12 +87,12 @@ class Command:
                 },
                 {
                     'x': 6.100,
-                    'y': 7.201,
+                    'y': 8.501,
                     'z': 0.0,
                 },
                 {
                     'x': 4.200,
-                    'y': 5.401,
+                    'y': 8.001,
                     'z': 0.0,
                 },
                 {
@@ -126,26 +136,36 @@ class Command:
         command.destination = destination
 
         costmap = r_costmap()
-        costmap.resolution = RESOLUTION
-        costmap.width = WIDTH
-        costmap.height = HEIGHT
+        costmap.resolution = self._resolution
+        costmap.width = self._width
+        costmap.height = self._height
         opoint = Point()
-        opoint.x = ORIGIN['point']['x']
-        opoint.y = ORIGIN['point']['y']
-        opoint.z = ORIGIN['point']['z']
+        opoint.x = self._origin['point']['x']
+        opoint.y = self._origin['point']['y']
+        opoint.z = self._origin['point']['z']
         oangle = r_angle()
-        oangle.roll = ORIGIN['angle']['roll']
-        oangle.pitch = ORIGIN['angle']['pitch']
-        oangle.yaw = ORIGIN['angle']['yaw']
+        oangle.roll = self._origin['angle']['roll']
+        oangle.pitch = self._origin['angle']['pitch']
+        oangle.yaw = self._origin['angle']['yaw']
         origin = r_pose()
         origin.point = opoint
         origin.angle = oangle
         costmap.origin = origin
-        costmap.cost_value = [0, 0, 0]
+        costmap.cost_value = self._calc_cost(body['waypoints'])
         command.costmap = costmap
 
         self._publisher.publish(command)
         return command
+
+    def _calc_cost(self, waypoints):
+        img = Image.new('L', (self._width, self._height), color=OBSTACLE)
+        draw = ImageDraw.Draw(img)
+        nodes = [(int(n['x']/self._resolution), int(n['y']/self._resolution)) for n in waypoints]
+        r = int(self._radius/self._resolution)
+        for node in nodes:
+            draw.ellipse((node[0] - r, node[1] - r, node[0] + r, node[1] + r), fill=FREE)
+        draw.line(nodes, fill=FREE, width=int(r * 2))
+        return list(img.getdata())
 
 
 def main():
