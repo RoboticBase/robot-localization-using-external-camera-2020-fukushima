@@ -5,7 +5,7 @@ from datetime import datetime, timedelta, timezone
 from threading import Lock
 
 import rospy
-from uoa_poc3_msgs.msg import r_state, r_navi_result
+from uoa_poc3_msgs.msg import r_state, r_info, r_navi_result
 
 from proton.reactor import Container
 
@@ -67,6 +67,24 @@ class State:
             self._lock.release()
 
 
+class Info:
+    def __init__(self, producer):
+        self._producer = producer
+
+    def info_cb(self, info):
+        rospy.loginfo('subscribe a info message, %s', info)
+        message = {
+            'time': info.time,
+            'robot_size': {
+                'radius': info.robot_size.radius,
+                'footprint': [{'x': c.x, 'y': c.y} for c in info.robot_size.footprint],
+            }
+        }
+        self._producer.send(json.dumps({
+            'attrs': message,
+        }))
+
+
 class NaviResult:
     def __init__(self, producer):
         self._producer = producer
@@ -122,7 +140,10 @@ def main():
     producer = Producer()
 
     state = State(producer)
-    rospy.Subscriber('/attr', r_state, state.state_cb)
+    rospy.Subscriber('/robot_state', r_state, state.state_cb)
+
+    info = Info(producer)
+    rospy.Subscriber('/robot_info', r_info, info.info_cb)
 
     navi_result = NaviResult(producer)
     rospy.Subscriber('/navi_cmdexe', r_navi_result, navi_result.navi_result_cb)
