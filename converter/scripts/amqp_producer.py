@@ -76,7 +76,8 @@ class Info:
         message = {
             'time': info.time,
             'robot_size': {
-                'radius': info.robot_size.radius,
+                'robot_radius': info.robot_size.robot_radius,
+                'inflation_radius': info.robot_size.inflation_radius,
                 'footprint': [{'x': c.x, 'y': c.y} for c in info.robot_size.footprint],
             }
         }
