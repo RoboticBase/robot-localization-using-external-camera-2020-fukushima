@@ -17,22 +17,6 @@ OBSTACLE = 254
 CMD_NAME = 'open'  # FIXME
 ENTITY_TYPE = 'robot'  # FIXME
 ENTITY_ID = 'robot01'  # FIXME
-RESOLUTION = 0.1  # FIXME
-WIDTH = 100  # FIXME
-HEIGHT = 100  # FIXME
-ORIGIN = {
-    'point': {
-        'x': 1.0,
-        'y': 1.0,
-        'z': 0.0,
-    },
-    'angle': {
-        'roll': 0.0,
-        'pitch': 0.0,
-        'yaw': 0.0,
-    }
-}  # FIXME
-RADIUS = 0.6  # FIXME
 
 
 class NaviCommand:
@@ -41,11 +25,6 @@ class NaviCommand:
         self._cmd_name = CMD_NAME
         self._entity_type = ENTITY_TYPE
         self._entity_id = ENTITY_ID
-        self._resolution = RESOLUTION
-        self._width = WIDTH
-        self._height = HEIGHT
-        self._origin = ORIGIN
-        self._radius = RADIUS
 
     def command_cb(self, msg):
         rospy.loginfo('consume a navi command message, %s', msg)
@@ -109,6 +88,24 @@ class NaviCommand:
                     'z': 0.0,
                 },
             ],
+            'inflation_radius': 0.6,
+            'costmap': {
+                'resolution': 0.1,
+                'width': 100,
+                'height': 100,
+                'origin': {
+                    'point': {
+                        'x': 1.0,
+                        'y': 1.0,
+                        'z': 0.0,
+                    },
+                    'angle': {
+                        'roll': 0.0,
+                        'pitch': 0.0,
+                        'yaw': 0.0,
+                    }
+                }
+            }
         }
 
         command = r_navi_command()
@@ -141,32 +138,32 @@ class NaviCommand:
         command.destination = destination
 
         costmap = r_costmap()
-        costmap.resolution = self._resolution
-        costmap.width = self._width
-        costmap.height = self._height
+        costmap.resolution = body['costmap']['resolution']
+        costmap.width = body['costmap']['width']
+        costmap.height = body['costmap']['height']
         opoint = Point()
-        opoint.x = self._origin['point']['x']
-        opoint.y = self._origin['point']['y']
-        opoint.z = self._origin['point']['z']
+        opoint.x = body['costmap']['origin']['point']['x']
+        opoint.y = body['costmap']['origin']['point']['y']
+        opoint.z = body['costmap']['origin']['point']['z']
         oangle = r_angle()
-        oangle.roll = self._origin['angle']['roll']
-        oangle.pitch = self._origin['angle']['pitch']
-        oangle.yaw = self._origin['angle']['yaw']
+        oangle.roll = body['costmap']['origin']['angle']['roll']
+        oangle.pitch = body['costmap']['origin']['angle']['pitch']
+        oangle.yaw = body['costmap']['origin']['angle']['yaw']
         origin = r_pose()
         origin.point = opoint
         origin.angle = oangle
         costmap.origin = origin
-        costmap.cost_value = self._calc_cost(body['waypoints'])
+        costmap.cost_value = self._calc_cost(body['waypoints'], body['inflation_radius'], costmap)
         command.costmap = costmap
 
         self._publisher.publish(command)
         return command
 
-    def _calc_cost(self, waypoints):
-        img = Image.new('L', (self._width, self._height), color=OBSTACLE)
+    def _calc_cost(self, waypoints, radius, costmap):
+        img = Image.new('L', (costmap.width, costmap.height), color=OBSTACLE)
         draw = ImageDraw.Draw(img)
-        nodes = [(int(n['x']/self._resolution), int(n['y']/self._resolution)) for n in waypoints]
-        r = int(self._radius/self._resolution)
+        nodes = [(int(n['x']/costmap.resolution), int(n['y']/costmap.resolution)) for n in waypoints]
+        r = int(radius/costmap.resolution)
         for node in nodes:
             draw.ellipse((node[0] - r, node[1] - r, node[0] + r, node[1] + r), fill=FREE)
         draw.line(nodes, fill=FREE, width=int(r * 2))
