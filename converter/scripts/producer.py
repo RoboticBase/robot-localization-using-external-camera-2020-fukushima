@@ -1,28 +1,25 @@
-import os
-
 import rospy
 
 from proton import Message
 
 from handler import Handler
-
-host = os.environ.get('AMQP_HOST', 'localhost')
-port = int(os.environ.get('AMQP_PORT', '5672'))
-use_tls = os.environ.get('AMQP_USE_TLS', 'False').lower() == 'true'
-username = os.environ.get('AMQP_SENDER_USERNAME', 'ANONYMOUS')
-password = os.environ.get('AMQP_SENDER_PASSWORD', '')
-queue = os.environ.get('AMQP_SEND_QUEUE', 'examples')
+from utils import wrap_namespace
 
 
 class Producer(Handler):
     def __init__(self):
-        super().__init__(host, port, use_tls, username, password)
+        self._params = wrap_namespace(rospy.get_param('~'))
+        super().__init__(self._params.amqp.host,
+                         self._params.amqp.port,
+                         self._params.amqp.use_tls,
+                         self._params.amqp.username,
+                         self._params.amqp.password)
         rospy.loginfo('init Producer')
         self.is_sendable = False
 
     def _on_start(self, event):
         rospy.loginfo('start Producer')
-        return event.container.create_sender(self.connection, queue)
+        return event.container.create_sender(self.connection, self._params.amqp.queue)
 
     def on_sendable(self, event):
         if not self.is_sendable:
