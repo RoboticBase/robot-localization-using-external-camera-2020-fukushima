@@ -21,6 +21,7 @@ services:
       - ./client.sh:/opt/client.sh
       - ./converter:/opt/rosws/src/converter
       - ./uoa_poc3_msgs:/opt/rosws/src/uoa_poc3_msgs
+      - ./eams_msgs:/opt/rosws/src/eams_msgs
     env_file:
       - .env
     depends_on:
@@ -36,5 +37,6 @@ services:
     volumes:
       - ./test_client:/opt/rosws/src/test_client
       - ./uoa_poc3_msgs:/opt/rosws/src/uoa_poc3_msgs
+      - ./eams_msgs:/opt/rosws/src/eams_msgs
     depends_on:
       - master
