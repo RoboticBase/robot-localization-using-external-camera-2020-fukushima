@@ -21,11 +21,16 @@
 #                              #   経度
 #                              # command != 1 の場合
 #                              #   無視
-#         param1: x.x          # command == 2 の場合
+#         param1: x.x          # command == 1 の場合
+#                              #   速度（m/s）
+#                              #   0.0を指定した場合はデフォルト速度
+#                              #   （屋外: 1m/s、屋内: 0.5m/s）
+#                              #   デフォルト値が設定可能な上限速度
+#                              # command == 2 の場合
 #                              #   遅延時間（秒）
 #                              # command == 3 の場合
 #                              #   ロボットの角度（度）
-#                              # command != 2 && command != 3 の場合
+#                              # command != 1 && command != 2 && command != 3 の場合
 #                              #   無視
 #         param2: x.x          # command == 3 の場合
 #                              #   0.0 # absolute 北を0度とし、時計回りでparam1の角度を向く
