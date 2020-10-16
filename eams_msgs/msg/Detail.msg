@@ -42,8 +42,8 @@
 #         param4: 0.0          # 無視
 
 int8 command #ミッションコマンド
-float32 lat #緯度
-float32 lng #経度
+float64 lat #緯度
+float64 lng #経度
 float32 param1 #コマンドパラメータ1
 float32 param2 #コマンドパラメータ2
 float32 param3 #コマンドパラメータ3
