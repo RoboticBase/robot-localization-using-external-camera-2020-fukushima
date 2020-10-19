@@ -1,0 +1,22 @@
+version: "3"
+
+networks:
+  rosnet:
+    driver: bridge
+    ipam:
+     driver: default
+     config:
+       - subnet: 172.30.0.0/24
+
+services:
+  converter:
+    image: "uoa-poc3-ros:kinetic-python3"
+    networks:
+      rosnet:
+        ipv4_address: 172.30.0.2
+    tty: true
+    environment:
+      - ROS_HOSTNAME=172.30.0.2
+      - ROS_MASTER_URI=http://host.docker.internal:11311
+    env_file:
+      - .env
