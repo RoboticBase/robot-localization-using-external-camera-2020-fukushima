@@ -17,6 +17,6 @@ services:
     tty: true
     environment:
       - ROS_HOSTNAME=172.30.0.2
-      - ROS_MASTER_URI=http://host.docker.internal:11311
+      - ROS_MASTER_URI=http://${ROS_MASTER_HOST}:11311
     env_file:
       - .env
