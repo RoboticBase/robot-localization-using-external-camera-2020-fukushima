@@ -50,6 +50,7 @@ find_package(OpenCV REQUIRED)
  add_message_files(
    FILES
    State.msg
+   Control.msg
 #   Message1.msg
 #   Message2.msg
  )
