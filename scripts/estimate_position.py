@@ -5,11 +5,10 @@ import csv
 import cv2
 import datetime
 import numpy as np
-import math
+#import math
 from sklearn.cluster import KMeans
 import tf
 from geometry_msgs.msg import PoseStamped
-import math
 import os
 
 def read_csv(name):
@@ -154,6 +153,7 @@ if __name__ == '__main__':
         NODE_NAME = 'get_estimate_coordinates'
         file_path = rospy.get_param("file_path")
         latest_time = latest_dir(file_path, "Pose_")
+        print("READED position from ", latest_time)
         pose_file = file_path + latest_time + '/pose.csv'
         ar_file = file_path + latest_time + '/ar.csv'
         r_poses_quat = read_csv(pose_file).astype(np.float32)
