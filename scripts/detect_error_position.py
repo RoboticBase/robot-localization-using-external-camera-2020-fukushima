@@ -8,6 +8,7 @@ import numpy as np
 import math
 import tf
 from geometry_msgs.msg import PoseStamped, PoseWithCovarianceStamped
+from actionlib_msgs.msg import GoalID
 import os
 
 def compare_Rmatrix(R1, R2):
@@ -33,6 +34,11 @@ def callback(robot_pose):
     print("COMPARE", diff_x, diff_y, diff_yaw)
     if diff_x >= meter_threshold or diff_y >= meter_threshold or diff_yaw >= radian_threshold:
         print("robot get error pose")
+        stop_order.stamp = rospy.Time.now()
+        stop_order.id = ""
+        pub.publish(stop_order)
+        print("ROBOT STOP")
+
 
 def main():
     try:
@@ -47,6 +53,8 @@ if __name__ == '__main__':
         NODE_NAME = 'detect_error_position'
         meter_threshold = rospy.get_param("meter_threshold")
         degree_threshold = rospy.get_param("degree_threshold")
+        pub = rospy.Publisher("/move_base/cancel", GoalID, queue_size=10)
+        stop_order = GoalID()
         main()
     except KeyboardInterrupt:
         pass
