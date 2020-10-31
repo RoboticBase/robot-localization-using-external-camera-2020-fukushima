@@ -11,7 +11,7 @@ from threading import Lock
 import rospy
 from std_msgs.msg import Float64, String
 from sensor_msgs.msg import NavSatFix, BatteryState
-from eams_msgs.msg import State, ImageInfo
+from eams_msgs.msg import State, Mission, Control
 
 from proton.reactor import Container
 
@@ -100,39 +100,34 @@ class RobotState(Base):
             'suspend' if state.status == 3 else \
             'error'
 
-
-class ImageInformation(Base):
+class RobotCommand(Base):
     def __init__(self, producer):
         super().__init__(producer)
 
-    def image_info_cb(self, image_info):
-        rospy.loginfo('subscribe an image information message, %s', image_info)
+    def control_cb(self, control):
+        rospy.loginfo('subscribe a control message, %s', control)
+        if control.command == 1:
+            cmd = 'start'
+        elif control.command == 0:
+            cmd = 'stop'
+        elif control.command == 2:
+            cmd = 'suspend'
+        else:
+            rospy.logerr('invalid command {}'.format(cmd))
+            return
         message = {
-            'time': datetime.fromtimestamp(image_info.header.stamp.to_time(), timezone.utc).isoformat(),
-            'image': {
-                'time': image_info.time,
-                'latitude': image_info.lat,
-                'longitude': image_info.lng,
-                'theta': image_info.yaw,
-                'hash': image_info.hash,
-                'path': image_info.path,
-            },
+            'time': datetime.fromtimestamp(control.header.stamp.to_time(), timezone.utc).isoformat(),
+            'command': cmd
         }
         self.send_atts(message)
 
-
-class NaviResult(Base):
-    def __init__(self, producer):
-        super().__init__(producer)
-
-    def navi_result_cb(self, result):
-        rospy.loginfo('subscribe a navi result, %s', result)
-        message = json.loads(result.data)
-        self.send_cmdexe(message)
-
+    
+    def mission_cb(self, mission):
+        rospy.loginfo('subscribe a mission message, %s', mission)
+        pass
 
 def main():
-    rospy.init_node('eams_producer', anonymous=True, disable_signals=True)
+    rospy.init_node('iot_producer', anonymous=True, disable_signals=True)
     params = wrap_namespace(rospy.get_param('~'))
 
     producer = Producer()
@@ -148,11 +143,9 @@ def main():
 
     rospy.Subscriber(params.topic.mission_state, State, robot_state.mode_cb)
 
-    image_info = ImageInformation(producer)
-    rospy.Subscriber(params.topic.image_info, ImageInfo, image_info.image_info_cb)
-
-    navi_result = NaviResult(producer)
-    rospy.Subscriber(params.topic.navi_cmdexe, String, navi_result.navi_result_cb)
+    robot_command = RobotCommand(producer)
+    rospy.Subscriber(params.topic.control_cmd, Control, robot_command.control_cb)
+    rospy.Subscriber(params.topic.mission_cmd, Mission, robot_command.mission_cb)
 
     def handler(signum, frame):
         rospy.loginfo('shutting down...')
