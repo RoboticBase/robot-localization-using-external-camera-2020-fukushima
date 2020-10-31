@@ -1,0 +1,65 @@
+<launch>
+  <arg name="AMQP_HOST" default="$(optenv AMQP_HOST localhost)"/>
+  <arg name="AMQP_PORT" default="$(optenv AMQP_PORT 5672)"/>
+  <arg name="AMQP_USE_TLS" default="$(optenv AMQP_USE_TLS false)"/>
+  <arg name="AMQP_CONSUMER_USERNAME" default="$(optenv AMQP_CONSUMER_USERNAME ANONYMOUS)"/>
+  <arg name="AMQP_CONSUMER_PASSWORD" default="$(optenv AMQP_CONSUMER_PASSWORD )"/>
+  <arg name="AMQP_CONSUMER_QUEUE" default="$(optenv AMQP_CONSUMER_QUEUE examples)"/>
+  <arg name="AMQP_PRODUCER_USERNAME" default="$(optenv AMQP_PRODUCER_USERNAME ANONYMOUS)"/>
+  <arg name="AMQP_PRODUCER_PASSWORD" default="$(optenv AMQP_PRODUCER_PASSWORD )"/>
+  <arg name="AMQP_PRODUCER_QUEUE" default="$(optenv AMQP_PRODUCER_QUEUE examples)"/>
+  <arg name="ENTITY_TYPE" default="$(optenv ENTITY_TYPE robot)"/>
+  <arg name="ENTITY_ID" default="$(optenv ENTITY_ID robot01)"/>
+  <arg name="NAVI_CMD_NAME" default="$(optenv NAVI_CMD_NAME naviCmd)"/>
+  <arg name="SEND_DELTA_MILLISEC" default="500"/>
+  <arg name="SLOP_MILLISEC" default="1000"/>
+  <arg name="MISSION_WAIT_MILLSEC" default="200"/>
+  <arg name="WAYPOINT_WAIT_MILLSEC" default="1000"/>
+
+  <node name="iot_consumer" pkg="converter" type="iot_consumer.py" output="screen">
+    <rosparam command="delete" param=""/>
+    <param name="amqp/host" value="$(arg AMQP_HOST)"/>
+    <param name="amqp/port" value="$(arg AMQP_PORT)"/>
+    <param name="amqp/use_tls" value="$(arg AMQP_USE_TLS)"/>
+    <param name="amqp/username" value="$(arg AMQP_CONSUMER_USERNAME)"/>
+    <param name="amqp/password" value="$(arg AMQP_CONSUMER_PASSWORD)"/>
+    <param name="amqp/queue" value="$(arg AMQP_CONSUMER_QUEUE)"/>
+    <param name="rb/entity_type" value="$(arg ENTITY_TYPE)"/>
+    <param name="rb/entity_id" value="$(arg ENTITY_ID)"/>
+    <param name="rb/navi_cmd_name" value="$(arg NAVI_CMD_NAME)"/>
+    <param name="topic/mission_state" value="/command/state"/>
+    <param name="topic/control_cmd" value="/command/control"/>
+    <param name="topic/mission_cmd" value="/command/mission"/>
+    <param name="topic/position" value="/mavros/global_position/global"/>
+    <param name="topic/compass" value="/mavros/global_position/compass_hdg"/>
+    <param name="topic/battery" value="/mavros/battery"/>
+    <param name="topic/image_info" value="/camera/image_info"/>
+    <param name="topic/navi_cmdexe" value="/navi_cmdexe"/>
+    <param name="thresholds/mission_wait_ms" value="$(arg MISSION_WAIT_MILLSEC)"/>
+    <param name="thresholds/waypoint_wait_ms" value="$(arg WAYPOINT_WAIT_MILLSEC)"/>
+  </node>
+
+  <node name="iot_producer" pkg="converter" type="iot_producer.py" output="screen">
+    <rosparam command="delete" param=""/>
+    <param name="amqp/host" value="$(arg AMQP_HOST)"/>
+    <param name="amqp/port" value="$(arg AMQP_PORT)"/>
+    <param name="amqp/use_tls" value="$(arg AMQP_USE_TLS)"/>
+    <param name="amqp/username" value="$(arg AMQP_PRODUCER_USERNAME)"/>
+    <param name="amqp/password" value="$(arg AMQP_PRODUCER_PASSWORD)"/>
+    <param name="amqp/queue" value="$(arg AMQP_PRODUCER_QUEUE)"/>
+    <param name="rb/entity_type" value="$(arg ENTITY_TYPE)"/>
+    <param name="rb/entity_id" value="$(arg ENTITY_ID)"/>
+    <param name="rb/navi_cmd_name" value="$(arg NAVI_CMD_NAME)"/>
+    <param name="topic/mission_state" value="/command/state"/>
+    <param name="topic/control_cmd" value="/command/control"/>
+    <param name="topic/mission_cmd" value="/command/mission"/>
+    <param name="topic/position" value="/mavros/global_position/global"/>
+    <param name="topic/compass" value="/mavros/global_position/compass_hdg"/>
+    <param name="topic/battery" value="/mavros/battery"/>
+    <param name="topic/image_info" value="/camera/image_info"/>
+    <param name="topic/navi_cmdexe" value="/navi_cmdexe"/>
+    <param name="thresholds/send_delta_ms" value="$(arg SEND_DELTA_MILLISEC)"/>
+    <param name="thresholds/slop_ms" value="$(arg SLOP_MILLISEC)"/>
+  </node>
+
+</launch>
