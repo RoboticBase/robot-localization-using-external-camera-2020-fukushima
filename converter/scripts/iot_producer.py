@@ -51,6 +51,8 @@ class Base:
     def send_cmdexe(self, message):
         self._send('cmdexe', message)
 
+    def send_cmd(self, message):
+        self._send('cmd', message)
 
 class RobotState(Base):
     def __init__(self, producer):
@@ -117,9 +119,11 @@ class RobotCommand(Base):
             return
         message = {
             'time': datetime.fromtimestamp(control.header.stamp.to_time(), timezone.utc).isoformat(),
-            'command': cmd
+            'naviCmd': {
+                'command': cmd
+            }
         }
-        self.send_atts(message)
+        self.send_cmd(message)
 
     
     def mission_cb(self, mission):
