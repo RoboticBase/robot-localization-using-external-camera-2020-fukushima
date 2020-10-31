@@ -48,21 +48,18 @@ class NaviCommand:
     def process(self, body):
         rospy.loginfo('process a navi message %s', body)
 
-        control, mission, result = self._make_control_and_mission(body)
+        control, mission = self._make_control_and_mission(body)
         if mission is not None:
             self._mission_pub.publish(mission)
             rospy.sleep(self._mission_wait_ms)
         if control is not None:
             self._control_pub.publish(control)
-        if result is not None:
-            self._cmdexe_pub.publish(result)
         return control, mission
 
     def _make_control_and_mission(self, body):
         if 'command' not in body or body['command'] not in ('start', 'stop', 'suspend'):
             return None, None, None
 
-        result = self._make_result(body)
         cmd = body['command']
 
         h = Header()
@@ -73,16 +70,16 @@ class NaviCommand:
         if cmd == 'start':
             control.command = 1
             mission = self._make_mission(body)
-            return control, mission, result
+            return control, mission
         elif cmd == 'stop':
             control.command = 0
-            return control, None, result
+            return control, None
         elif cmd == 'suspend':
             control.command = 2
-            return control, None, result
+            return control, None
         else:
             rospy.logerr('invalid command {}'.format(body['command']))
-            return None, None, None
+            return None, None
 
     def _make_mission(self, body):
         mission = Mission()
@@ -131,20 +128,6 @@ class NaviCommand:
             details.append(delay)
         mission.details = details[:-1]
         return mission
-
-    def _make_result(self, body):
-        message = {}
-        message[self._params.rb.navi_cmd_name] = {
-            'time': datetime.fromtimestamp(rospy.Time.now().to_time(), timezone.utc).isoformat(),
-            'received_time': body['time'],
-            'received_command': body['command'],
-            'received_waypoints': body['waypoints'],
-            'result': 'ack',
-            'errors': [],
-        }
-        result = String()
-        result.data = json.dumps(message)
-        return result
 
 
 def main():
