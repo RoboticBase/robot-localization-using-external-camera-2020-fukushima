@@ -7,24 +7,25 @@ import datetime
 import numpy as np
 import math
 import tf
-from geometry_msgs.msg import PoseStamped, PoseWithCovarianceStamped
 from actionlib_msgs.msg import GoalID
+from rpl.msg import Point2
 import os
 
 def compare_Rmatrix(R1, R2):
     return np.dot(np.linalg.inv(R1), R1)
 
 def PoseStamped_to_Numpyarray(msg):
-    Tvec = np.array([msg.pose.position.x, msg.pose.position.y, msg.pose.position.z], dtype = 'float')
-    Quat = np.array([msg.pose.orientation.x, msg.pose.orientation.y, msg.pose.orientation.z, msg.pose.orientation.w], dtype = 'float')
-    TQ = np.array([msg.pose.position.x, msg.pose.position.y, msg.pose.position.z, msg.pose.orientation.x, msg.pose.orientation.y, msg.pose.orientation.z, msg.pose.orientation.w], dtype = 'float')
+    Tvec = np.array([msg.position.x, msg.position.y, msg.position.z], dtype = 'float')
+    Quat = np.array([msg.orientation.x, msg.orientation.y, msg.orientation.z, msg.orientation.w], dtype = 'float')
+    TQ = np.array([msg.position.x, msg.position.y, msg.position.z, msg.orientation.x, msg.orientation.y, msg.orientation.z, msg.orientation.w], dtype = 'float')
     return Tvec, Quat, TQ
 
-def callback(robot_pose):
-    estimated_pose = rospy.wait_for_message("/AR/estimated_pose", PoseStamped)
-    diff_x = abs(robot_pose.pose.pose.position.x - estimated_pose.pose.position.x)
-    diff_y = abs(robot_pose.pose.pose.position.y - estimated_pose.pose.position.y)
-    _, QuatR, _ = PoseStamped_to_Numpyarray(robot_pose.pose)
+def callback(poses):
+    robot_pose = poses.robot
+    estimated_pose = poses.camera
+    diff_x = abs(robot_pose.position.x - estimated_pose.position.x)
+    diff_y = abs(robot_pose.position.y - estimated_pose.position.y)
+    _, QuatR, _ = PoseStamped_to_Numpyarray(robot_pose)
     _, QuatE, _ = PoseStamped_to_Numpyarray(estimated_pose)
 
     Rr = tf.transformations.quaternion_matrix(QuatR)[:3,:3]
@@ -43,7 +44,7 @@ def callback(robot_pose):
 def main():
     try:
         rospy.init_node(NODE_NAME)
-        rospy.Subscriber("/amcl_pose", PoseWithCovarianceStamped, callback, queue_size=10)
+        rospy.Subscriber("/AR/integrated_pose", Point2, callback, queue_size=10)
         rospy.spin()
     except rospy.ROSInterruptException:
         pass
