@@ -3,7 +3,4 @@
 
   <node name="camera" pkg="rpl" type="camera.py" output="screen"/>
   <node name="calibration" pkg="rpl" type="calibration.py" output="screen"/>
-  <node name="calib_image_view" pkg="image_view" type="image_view" output="screen">
-    <remap from="image" to="calib_image" />
-  </node>
 </launch>
