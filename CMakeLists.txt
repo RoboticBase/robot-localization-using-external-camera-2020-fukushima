@@ -11,6 +11,7 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   message_generation
+  geometry_msgs
 )
 
 ## System dependencies are found with CMake's conventions
@@ -51,6 +52,7 @@ find_package(OpenCV REQUIRED)
    FILES
    State.msg
    Control.msg
+   Point2.msg
 #   Message1.msg
 #   Message2.msg
  )
@@ -73,6 +75,7 @@ find_package(OpenCV REQUIRED)
 generate_messages(
    DEPENDENCIES
    std_msgs  # Or other packages containing msgs
+   geometry_msgs
 )
 
 ################################################
