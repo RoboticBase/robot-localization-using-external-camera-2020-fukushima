@@ -7,7 +7,7 @@ import rospy
 
 from std_msgs.msg import Header, String
 from eams_msgs.msg import Control, Mission, Detail
-
+from iot_msgs.msg import Point2
 from proton.reactor import Container
 
 from consumer import Consumer
@@ -23,15 +23,42 @@ class Dispatcher:
         rospy.loginfo('consume a command message, %s', msg)
         try:
             message = json.loads(msg)
-            if 'cmd' not in message:
+            if 'cmd' in message:
+                if self._params.rb.navi_cmd_name in message['cmd']:
+                    body = message['cmd'][self._params.rb.navi_cmd_name]
+                    ros_published_control, ros_published_mission = self._naviCommand.process(body)
+                    rospy.loginfo('processed the navi command, control=%s, mission=%s', ros_published_control, ros_published_mission)
+                else:
+                    rospy.logerr('unknown command')
+            elif 'attrs' in message:
+                if 'pose_camera' in message['attrs']:
+                    camera_json = message['attrs']['pose_camera']
+                    robot_json = message['attrs']['pose_robot']
+                    h = Header()
+                    h.stamp = rospy.Time.now()
+                    h.frame_id = 'integrator'
+                    output = Point2()
+                    output.header = h
+                    output.camera.position.x = camera_json['point']['x']
+                    output.camera.position.y = camera_json['point']['y']
+                    output.camera.position.z = camera_json['point']['z']
+                    output.camera.orientation.x = camera_json['orientation']['x']
+                    output.camera.orientation.y = camera_json['orientation']['y']
+                    output.camera.orientation.z = camera_json['orientation']['z']
+                    output.camera.orientation.w = camera_json['orientation']['w']
+
+                    output.robot.position.x = robot_json['point']['x']
+                    output.robot.position.y = robot_json['point']['y']
+                    output.robot.position.z = robot_json['point']['z']
+                    output.robot.orientation.x = robot_json['orientation']['x']
+                    output.robot.orientation.y = robot_json['orientation']['y']
+                    output.robot.orientation.z = robot_json['orientation']['z']
+                    output.robot.orientation.w = robot_json['orientation']['w']
+                    pose2_pub.publish(output)
+
+            else:
                 rospy.logerr('invalid payload')
                 return
-            if self._params.rb.navi_cmd_name in message['cmd']:
-                body = message['cmd'][self._params.rb.navi_cmd_name]
-                ros_published_control, ros_published_mission = self._naviCommand.process(body)
-                rospy.loginfo('processed the navi command, control=%s, mission=%s', ros_published_control, ros_published_mission)
-            else:
-                rospy.logerr('unknown command')
         except (ValueError, TypeError) as e:
             rospy.logerr('invalid payload, %s', e)
 
@@ -137,6 +164,9 @@ def main():
     control_pub = rospy.Publisher(params.topic.control_cmd, Control, queue_size=1)
     mission_pub = rospy.Publisher(params.topic.mission_cmd, Mission, queue_size=1)
     cmdexe_pub = rospy.Publisher(params.topic.navi_cmdexe, String, queue_size=1)
+
+    pose2_pub = rospy.Publisher("/AR/integrated_pose", Point2, queue_size=1)
+
 
     naviCommand = NaviCommand(control_pub, mission_pub, cmdexe_pub)
     dispatcher = Dispatcher(naviCommand)

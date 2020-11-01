@@ -12,7 +12,7 @@ import rospy
 from std_msgs.msg import Float64, String
 from sensor_msgs.msg import NavSatFix, BatteryState
 from eams_msgs.msg import State, Mission, Control
-
+from iot_msgs.msg import Point2
 from proton.reactor import Container
 
 from producer import Producer
@@ -24,23 +24,9 @@ class Base:
     def __init__(self, producer):
         self._producer = producer
 
-        alg = hashlib.sha256()
-        paths = sorted([f for f in glob.glob(f'{os.path.dirname(os.path.abspath(__file__))}/../**', recursive=True)
-                        if re.search('.+\\.(txt|xml|launch|py)$', f)])
-        for path in paths:
-            with open(path, 'rb') as f:
-                while True:
-                    chunk = f.read(4096 * alg.block_size)
-                    if len(chunk) == 0:
-                        break
-                    alg.update(chunk)
-        self._digest = alg.hexdigest()
-        rospy.loginfo('digest=%s', self._digest)
-
     def _send(self, key, message):
         if 'metadata' not in message:
             message['metadata'] = {}
-        message['metadata']['digest'] = self._digest
         payload = {}
         payload[key] = message
         self._producer.send(json.dumps(payload))
@@ -93,6 +79,38 @@ class RobotState(Base):
             self.send_atts(message)
             self._lock.release()
 
+    def poses_cb(self, poses):
+        rospy.loginfo('subscribe poses message, %s', poses)
+        message = {
+            'time': datetime.fromtimestamp(position.header.stamp.to_time(), timezone.utc).isoformat(),
+            'pose_camera': {
+                'point': {
+                    'x': poses.camera.position.x,
+                    'y': poses.camera.position.y,
+                    'z': poses.camera.position.z,
+                },
+                'orientation': {
+                    'x': poses.camera.orientation.x,
+                    'y': poses.camera.orientation.y,
+                    'z': poses.camera.orientation.z,
+                    'w': poses.camera.orientation.w
+                }
+            },
+            'pose_robot': {
+                'point': {
+                    'x': poses.robot.position.x,
+                    'y': poses.robot.position.y,
+                    'z': poses.robot.position.z,
+                },
+                'orientation': {
+                    'x': poses.robot.orientation.x,
+                    'y': poses.robot.orientation.y,
+                    'z': poses.robot.orientation.z,
+                    'w': poses.robot.orientation.w
+                }
+            }
+        }
+        self.send_atts(message)
 
     def mode_cb(self, state):
         rospy.loginfo('subscribe a state message, %s', state)
@@ -118,14 +136,13 @@ class RobotCommand(Base):
             rospy.logerr('invalid command {}'.format(cmd))
             return
         message = {
-            'time': datetime.fromtimestamp(control.header.stamp.to_time(), timezone.utc).isoformat(),
             'naviCmd': {
+                'time': datetime.fromtimestamp(control.header.stamp.to_time(), timezone.utc).isoformat(),
                 'command': cmd
             }
         }
         self.send_cmd(message)
 
-    
     def mission_cb(self, mission):
         rospy.loginfo('subscribe a mission message, %s', mission)
         pass
@@ -137,19 +154,21 @@ def main():
     producer = Producer()
 
     robot_state = RobotState(producer)
-    position_sub = message_filters.Subscriber(params.topic.position, NavSatFix)
-    compass_sub = message_filters.Subscriber(params.topic.compass, Float64)
-    battery_sub = message_filters.Subscriber(params.topic.battery, BatteryState)
+#    position_sub = message_filters.Subscriber(params.topic.position, NavSatFix)
+#    compass_sub = message_filters.Subscriber(params.topic.compass, Float64)
+#    battery_sub = message_filters.Subscriber(params.topic.battery, BatteryState)
 
-    slop = float(params.thresholds.slop_ms)/1000.0
-    ts = message_filters.ApproximateTimeSynchronizer([position_sub, compass_sub, battery_sub], 10, slop, allow_headerless=True)
-    ts.registerCallback(robot_state.state_cb)
+#    slop = float(params.thresholds.slop_ms)/1000.0
+#    ts = message_filters.ApproximateTimeSynchronizer([position_sub, compass_sub, battery_sub], 10, slop, allow_headerless=True)
+#    ts.registerCallback(robot_state.state_cb)
 
     rospy.Subscriber(params.topic.mission_state, State, robot_state.mode_cb)
 
     robot_command = RobotCommand(producer)
     rospy.Subscriber(params.topic.control_cmd, Control, robot_command.control_cb)
     rospy.Subscriber(params.topic.mission_cmd, Mission, robot_command.mission_cb)
+
+    rospy.Subscriber("/AR/integrated_pose", Point2, robot_state.poses_cb)
 
     def handler(signum, frame):
         rospy.loginfo('shutting down...')
