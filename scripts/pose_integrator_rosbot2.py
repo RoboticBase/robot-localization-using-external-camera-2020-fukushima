@@ -40,9 +40,6 @@ def main():
 if __name__ == '__main__':
     try:
         NODE_NAME = 'detect_error_position'
-        meter_threshold = rospy.get_param("meter_threshold")
-        degree_threshold = rospy.get_param("degree_threshold")
-
         pub = rospy.Publisher("/AR/integrated_pose", Point2, queue_size=10)
         stop_order = GoalID()
         main()

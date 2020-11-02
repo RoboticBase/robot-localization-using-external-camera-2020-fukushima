@@ -4,5 +4,5 @@
 
   <node name="camera" pkg="rpl" type="camera.py" output="screen"/>
   <node name="ar" pkg="rpl" type="ar_detector.py" output="screen"/>
-  <node name="source_position_generator" pkg="rpl" type="source_position_generator.py" output="screen"/>
+  <node name="source_position_generator" pkg="rpl" type="source_position_generator_rosbot2.py" output="screen"/>
 </launch>
