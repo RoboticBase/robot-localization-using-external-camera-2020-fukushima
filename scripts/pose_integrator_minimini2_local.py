@@ -12,7 +12,7 @@ from actionlib_msgs.msg import GoalID
 from rpl.msg import Point2
 import os
 import message_filters_py3 as message_filters
-
+from std_msgs.msg import Header
 def callback(robot_pose, camera_pose):
     h = Header()
     h.stamp = rospy.Time.now()
@@ -30,7 +30,6 @@ def main():
         robot_pose_sub = message_filters.Subscriber("/mavros/local_position/pose", PoseStamped)
         camera_pose_sub = message_filters.Subscriber("/AR/estimated_pose", PoseStamped)
 
-        slop = float(params.thresholds.slop_ms)/1000.0
         ts = message_filters.ApproximateTimeSynchronizer([robot_pose_sub, camera_pose_sub], 10, slop, allow_headerless=True)
         ts.registerCallback(callback)
 
@@ -41,6 +40,7 @@ def main():
 if __name__ == '__main__':
     try:
         NODE_NAME = 'detect_error_position'
+        slop = rospy.get_param("slop_ms")/1000.0
         pub = rospy.Publisher("/AR/integrated_pose", Point2, queue_size=10)
         stop_order = GoalID()
         main()

@@ -1,6 +1,7 @@
 <launch>
   <param name="calibration_path" value="$(find rpl)/config/camera.xml" />
   <param name="file_path" value="$(find rpl)/config/source_position/"/>
+  <param name="slop_ms" type="double"    value="1000.0"/>
 
   <node name="camera" pkg="rpl" type="camera.py" output="screen"/>
   <node name="ar" pkg="rpl" type="ar_detector.py" output="screen"/>
