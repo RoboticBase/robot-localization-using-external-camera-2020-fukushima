@@ -6,6 +6,7 @@ ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
 COPY ./converter /opt/rosws/src/converter
 COPY ./uoa_poc3_msgs /opt/rosws/src/uoa_poc3_msgs
 COPY ./eams_msgs /opt/rosws/src/eams_msgs
+COPY ./iot_msgs /opt/rosws/src/iot_msgs
 COPY ./docker/production/client.sh /opt/client.sh
 
 RUN chmod +x /tini
