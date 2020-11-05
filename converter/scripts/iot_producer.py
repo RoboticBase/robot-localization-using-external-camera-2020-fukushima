@@ -82,7 +82,7 @@ class RobotState(Base):
     def poses_cb(self, poses):
         rospy.loginfo('subscribe poses message, %s', poses)
         message = {
-            'time': datetime.fromtimestamp(position.header.stamp.to_time(), timezone.utc).isoformat(),
+            'time': datetime.fromtimestamp(poses.header.stamp.to_time(), timezone.utc).isoformat(),
             'pose_camera': {
                 'point': {
                     'x': poses.camera.position.x,

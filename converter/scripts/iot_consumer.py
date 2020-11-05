@@ -165,9 +165,6 @@ def main():
     mission_pub = rospy.Publisher(params.topic.mission_cmd, Mission, queue_size=1)
     cmdexe_pub = rospy.Publisher(params.topic.navi_cmdexe, String, queue_size=1)
 
-    pose2_pub = rospy.Publisher("/AR/integrated_pose", Point2, queue_size=1)
-
-
     naviCommand = NaviCommand(control_pub, mission_pub, cmdexe_pub)
     dispatcher = Dispatcher(naviCommand)
     consumer = Consumer(dispatcher.dispatch_cb)
@@ -182,4 +179,5 @@ def main():
 
 
 if __name__ == '__main__':
+    pose2_pub = rospy.Publisher("/AR/integrated_pose", Point2, queue_size=1)
     main()
