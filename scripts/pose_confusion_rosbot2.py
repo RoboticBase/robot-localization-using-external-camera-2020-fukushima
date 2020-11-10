@@ -9,8 +9,7 @@ import math
 import tf
 import os
 from std_msgs.msg import Header
-from geometry_msgs.msg import PoseStamped, Pose, PoseWithCovarianceStamped
-from std_msgs.msg import Bool
+from geometry_msgs.msg import PoseStamped, Pose, PoseWithCovarianceStamped, Point
 
 def callback(robot_pose):
     h = Header()
@@ -18,25 +17,27 @@ def callback(robot_pose):
     h.frame_id = 'confusion'
     output = PoseStamped()
     output.header = h
-    output.pose.position.x = robot_pose.pose.pose.position.x + 0
-    output.pose.position.y = robot_pose.pose.pose.position.y + 0
-    output.pose.position.z = robot_pose.pose.pose.position.z + 0
+    output.pose.position.x = robot_pose.pose.pose.position.x + error.position.x
+    output.pose.position.y = robot_pose.pose.pose.position.y + error.position.y
+    output.pose.position.z = robot_pose.pose.pose.position.z + error.position.z
 
-    output.pose.orientation.x = robot_pose.pose.pose.orientation.x + 0
-    output.pose.orientation.y = robot_pose.pose.pose.orientation.y + 0
-    output.pose.orientation.z = robot_pose.pose.pose.orientation.z + 0
-    output.pose.orientation.w = robot_pose.pose.pose.orientation.w + 0
+    output.pose.orientation.x = robot_pose.pose.pose.orientation.x + error.orientation.x
+    output.pose.orientation.y = robot_pose.pose.pose.orientation.y + error.orientation.y
+    output.pose.orientation.z = robot_pose.pose.pose.orientation.z + error.orientation.z
+    output.pose.orientation.w = robot_pose.pose.pose.orientation.w + error.orientation.w
 
     pub.publish(output)
 
-def bool_cb(flg):
-    pass
+def bool_cb(diff_p):
+    error.position.x = diff_p.x
+    error.position.y = diff_p.y
+    error.position.z = diff_p.z
 
 def main():
     try:
         rospy.init_node(NODE_NAME)
         rospy.Subscriber("/amcl_pose", PoseWithCovarianceStamped, callback, queue_size=10)
-        #rospy.Subscriber("/AR/confution_pose/control", Bool, bool_cb, queue_size=10)
+        rospy.Subscriber("/AR/confution_pose/position", Point, bool_cb, queue_size=10)
         rospy.spin()
     except rospy.ROSInterruptException:
         pass
