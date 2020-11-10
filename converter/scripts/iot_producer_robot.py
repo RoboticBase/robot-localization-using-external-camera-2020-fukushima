@@ -157,8 +157,8 @@ def main():
     rospy.Subscriber(params.topic.mission_state, State, robot_state.mode_cb)
 
     robot_command = RobotCommand(producer)
-    rospy.Subscriber(params.topic.control_cmd, Control, robot_command.control_cb)
-    rospy.Subscriber(params.topic.mission_cmd, Mission, robot_command.mission_cb)
+    #rospy.Subscriber(params.topic.control_cmd, Control, robot_command.control_cb)
+    #rospy.Subscriber(params.topic.mission_cmd, Mission, robot_command.mission_cb)
 
     rospy.Subscriber("/AR/integrated_pose", Point2, robot_state.poses_cb)
 
