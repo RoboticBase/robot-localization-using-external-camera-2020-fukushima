@@ -39,7 +39,7 @@
     <param name="thresholds/waypoint_wait_ms" value="$(arg WAYPOINT_WAIT_MILLSEC)"/>
   </node>
 
-  <node name="iot_producer" pkg="converter" type="iot_producer.py" output="screen">
+  <node name="iot_producer" pkg="converter" type="iot_producer_platform.py" output="screen">
     <rosparam command="delete" param=""/>
     <param name="amqp/host" value="$(arg AMQP_HOST)"/>
     <param name="amqp/port" value="$(arg AMQP_PORT)"/>

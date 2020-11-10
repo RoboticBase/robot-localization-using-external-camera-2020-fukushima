@@ -154,14 +154,6 @@ def main():
     producer = Producer()
 
     robot_state = RobotState(producer)
-#    position_sub = message_filters.Subscriber(params.topic.position, NavSatFix)
-#    compass_sub = message_filters.Subscriber(params.topic.compass, Float64)
-#    battery_sub = message_filters.Subscriber(params.topic.battery, BatteryState)
-
-#    slop = float(params.thresholds.slop_ms)/1000.0
-#    ts = message_filters.ApproximateTimeSynchronizer([position_sub, compass_sub, battery_sub], 10, slop, allow_headerless=True)
-#    ts.registerCallback(robot_state.state_cb)
-
     rospy.Subscriber(params.topic.mission_state, State, robot_state.mode_cb)
 
     robot_command = RobotCommand(producer)
