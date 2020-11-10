@@ -18,14 +18,14 @@ def callback(robot_pose):
     h.frame_id = 'confusion'
     output = PoseStamped()
     output.header = h
-    output.pose.position.x = robot_pose.pose.pose.position.x + 0
-    output.pose.position.y = robot_pose.pose.pose.position.y + 0
-    output.pose.position.z = robot_pose.pose.pose.position.z + 0
+    output.pose.position.x = robot_pose.pose.position.x + 0
+    output.pose.position.y = robot_pose.pose.position.y + 0
+    output.pose.position.z = robot_pose.pose.position.z + 0
 
-    output.pose.orientation.x = robot_pose.pose.pose.orientation.x + 0
-    output.pose.orientation.y = robot_pose.pose.pose.orientation.y + 0
-    output.pose.orientation.z = robot_pose.pose.pose.orientation.z + 0
-    output.pose.orientation.w = robot_pose.pose.pose.orientation.w + 0
+    output.pose.orientation.x = robot_pose.pose.orientation.x + 0
+    output.pose.orientation.y = robot_pose.pose.orientation.y + 0
+    output.pose.orientation.z = robot_pose.pose.orientation.z + 0
+    output.pose.orientation.w = robot_pose.pose.orientation.w + 0
 
     pub.publish(output)
 
@@ -35,7 +35,7 @@ def bool_cb(flg):
 def main():
     try:
         rospy.init_node(NODE_NAME)
-        rospy.Subscriber("/amcl_pose", PoseWithCovarianceStamped, callback, queue_size=10)
+        rospy.Subscriber(("/mavros/local_position/pose", PoseStamped, callback, queue_size=10)
         #rospy.Subscriber("/AR/confution_pose/control", Bool, bool_cb, queue_size=10)
         rospy.spin()
     except rospy.ROSInterruptException:
