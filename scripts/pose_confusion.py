@@ -55,7 +55,8 @@ def orient_cb(diff_o):
 def main():
     try:
         rospy.init_node(NODE_NAME)
-        rospy.Subscriber(("/mavros/local_position/pose", PoseStamped, mini2_cb, queue_size=10)
+        #rospy.Subscriber("/mavros/local_position/pose", PoseStamped, mini2_cb, queue_size=10)
+        rospy.Subscriber("/cartographer/pose", PoseStamped, mini2_cb, queue_size=10)
         rospy.Subscriber("/amcl_pose", PoseWithCovarianceStamped, rosbot_cb, queue_size=10)
         rospy.Subscriber("/AR/confution_pose/position", Point, pose_cb, queue_size=10)
         rospy.Subscriber("/AR/confution_pose/orientation", Quaternion, orient_cb, queue_size=10)
