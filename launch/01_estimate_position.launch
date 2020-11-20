@@ -8,5 +8,5 @@
   <node name="estimate_position" pkg="rpl" type="estimate_position.py" output="screen"/>
   <node name="pose_integrator" pkg="rpl" type="pose_integrator.py" output="screen"/>
   <node name="pose_confusion" pkg="rpl"  type="pose_confusion.py" output="screen"/>
-  
+  <node name="pose_init" pkg="rpl"  type="pose_init_minimini2.py" output="screen"/>
 </launch>

@@ -8,37 +8,32 @@ import numpy as np
 import math
 import tf
 import os
-from std_msgs.msg import Header
+from std_msgs.msg import Header, Float32
 from geometry_msgs.msg import PoseStamped, Pose, PoseWithCovarianceStamped, Point, Quaternion
 
-def mini2_cb(robot_pose):
-    h = Header()
-    h.stamp = robot_pose.header.stamp
-    h.frame_id = 'confusion'
-    output = PoseStamped()
-    output.header = h
-    output.pose.position.x = robot_pose.pose.position.x + error.position.x
-    output.pose.position.y = robot_pose.pose.position.y + error.position.y
-    output.pose.position.z = robot_pose.pose.position.z + error.position.z
-    output.pose.orientation.x = robot_pose.pose.orientation.x + error.orientation.x
-    output.pose.orientation.y = robot_pose.pose.orientation.y + error.orientation.y
-    output.pose.orientation.z = robot_pose.pose.orientation.z + error.orientation.z
-    output.pose.orientation.w = robot_pose.pose.orientation.w + error.orientation.w
-    pub.publish(output)
+def oriToarray(ori):
+    return(np.array([ori.x ,ori.y, ori.z, ori.w]))
 
-def rosbot_cb(robot_pose):
+def create_posestamped(header, pose):
     h = Header()
-    h.stamp = robot_pose.header.stamp
     h.frame_id = 'confusion'
+    h.stamp = header.stamp
     output = PoseStamped()
     output.header = h
-    output.pose.position.x = robot_pose.pose.pose.position.x + error.position.x
-    output.pose.position.y = robot_pose.pose.pose.position.y + error.position.y
-    output.pose.position.z = robot_pose.pose.pose.position.z + error.position.z
-    output.pose.orientation.x = robot_pose.pose.pose.orientation.x + error.orientation.x
-    output.pose.orientation.y = robot_pose.pose.pose.orientation.y + error.orientation.y
-    output.pose.orientation.z = robot_pose.pose.pose.orientation.z + error.orientation.z
-    output.pose.orientation.w = robot_pose.pose.pose.orientation.w + error.orientation.w
+    output.pose.position.x = pose.position.x + error.position.x
+    output.pose.position.y = pose.position.y + error.position.y
+    output.pose.position.z = pose.position.z + error.position.z
+    quat_in = oriToarray(pose.orientation)
+    quat_err = oriToarray(error.orientation)
+    quat_out = tf.transformations.quaternion_multiply(quat_in, quat_err)
+    output.pose.orientation.x = quat_out[0]
+    output.pose.orientation.y = quat_out[1]
+    output.pose.orientation.z = quat_out[2]
+    output.pose.orientation.w = quat_out[3]
+    return(output)
+
+def mini2_cb(robot_pose):
+    output = create_posestamped(robot_pose.header, robot_pose.pose)
     pub.publish(output)
 
 def pose_cb(diff_p):
@@ -52,13 +47,21 @@ def orient_cb(diff_o):
     error.orientation.z = diff_o.z
     error.orientation.w = diff_o.w
 
+def degree_cb(deg):
+    rad = deg.data / 180 * math.pi
+    quat = tf.transformations.quaternion_from_euler(0,0,rad)
+    error.orientation.x = quat[0]
+    error.orientation.y = quat[1]
+    error.orientation.z = quat[2]
+    error.orientation.w = quat[3]
+
 def main():
     try:
         rospy.init_node(NODE_NAME)
         #rospy.Subscriber("/mavros/local_position/pose", PoseStamped, mini2_cb, queue_size=10)
-        rospy.Subscriber("/cartographer/pose", PoseStamped, mini2_cb, queue_size=10)
-        rospy.Subscriber("/amcl_pose", PoseWithCovarianceStamped, rosbot_cb, queue_size=10)
+        rospy.Subscriber("/AR/init_pose", PoseStamped, mini2_cb, queue_size=10)
         rospy.Subscriber("/AR/confution_pose/position", Point, pose_cb, queue_size=10)
+        rospy.Subscriber("/AR/confution_pose/degree", Float32, degree_cb, queue_size=10)
         rospy.Subscriber("/AR/confution_pose/orientation", Quaternion, orient_cb, queue_size=10)
         rospy.spin()
     except rospy.ROSInterruptException:
@@ -69,6 +72,7 @@ if __name__ == '__main__':
         NODE_NAME = 'pose_confusion'
         pub = rospy.Publisher("/AR/confution_pose", PoseStamped, queue_size=10)
         error = Pose()
+        error.orientation.w = 1.0
         main()
     except KeyboardInterrupt:
         pass
