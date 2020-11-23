@@ -32,6 +32,8 @@ def callback(msg):
         with open(pose_file, mode='a') as f:
             f.write(buf)
         buf = PoseStampedToText(count, msg2)
+        with open(ar_file, mode='a') as f:
+            f.write(buf)
         count+=1
         print("RECORDED Source position")
 
