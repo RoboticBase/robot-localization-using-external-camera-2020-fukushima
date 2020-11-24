@@ -7,9 +7,9 @@ import datetime
 import numpy as np
 import math
 import tf
-from actionlib_msgs.msg import GoalID
-from rpl.msg import Point2
 import os
+from actionlib_msgs.msg import GoalID
+from iot_msgs.msg import Point2
 
 def compare_Rmatrix(R1, R2):
     return np.dot(np.linalg.inv(R1), R1)

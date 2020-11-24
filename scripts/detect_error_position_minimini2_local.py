@@ -7,9 +7,12 @@ import datetime
 import numpy as np
 import math
 import tf
-from geometry_msgs.msg import PoseStamped
-from rpl.msg import Control, Point2
 import os
+from geometry_msgs.msg import PoseStamped
+from eams_msgs.msg import Control
+from iot_msgs.msg import Point2
+
+flg = False
 
 def compare_Rmatrix(R1, R2):
     return np.dot(np.linalg.inv(R1), R1)
@@ -21,6 +24,9 @@ def PoseStamped_to_Numpyarray(msg):
     return Tvec, Quat, TQ
 
 def callback(poses):
+    global flg
+    if flg:
+        return
     robot_pose = poses.robot
     estimated_pose = poses.camera
     diff_x = abs(robot_pose.position.x - estimated_pose.position.x)
@@ -32,14 +38,18 @@ def callback(poses):
     Re = tf.transformations.quaternion_matrix(QuatE)[:3,:3]
     diff_yaw = tf.transformations.euler_from_matrix(compare_Rmatrix(Rr, Re))[2]
     radian_threshold = degree_threshold * math.pi /180
-    print("COMPARE", diff_x, diff_y, diff_yaw)
+    diff_deg = diff_yaw * 180 / math.pi
+    print("COMPARE", diff_x, diff_y, diff_deg)
+
     if diff_x >= meter_threshold or diff_y >= meter_threshold or diff_yaw >= radian_threshold:
-        print("robot has error pose")
+        print("ERROR", diff_x, diff_y, diff_deg)
+        #print("robot has error pose")
         stop_order.header.stamp = rospy.Time.now()
         stop_order.header.frame_id = "stop"
         stop_order.command = 0
         pub.publish(stop_order)
         print("ROBOT STOP")
+        flg = True
 
 def main():
     try:

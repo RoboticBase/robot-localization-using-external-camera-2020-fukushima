@@ -5,11 +5,10 @@ import csv
 import cv2
 import datetime
 import numpy as np
-#import math
-from sklearn.cluster import KMeans
 import tf
-from geometry_msgs.msg import PoseStamped
 import os
+from sklearn.cluster import KMeans
+from geometry_msgs.msg import PoseStamped
 
 def read_csv(name):
     csv_obj = csv.reader(open(name, "r"))

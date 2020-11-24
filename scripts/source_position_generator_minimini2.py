@@ -6,7 +6,7 @@ from sensor_msgs.msg import Image
 from cv_bridge import CvBridge
 import numpy as np
 from geometry_msgs.msg import PoseStamped
-from rpl.msg import State
+from eams_msgs.msg import State
 from actionlib_msgs.msg import GoalStatusArray
 from std_msgs.msg import String
 import os
