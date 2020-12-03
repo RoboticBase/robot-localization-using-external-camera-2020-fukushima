@@ -10,15 +10,7 @@ import tf
 import os
 from actionlib_msgs.msg import GoalID
 from iot_msgs.msg import Point2
-
-def compare_Rmatrix(R1, R2):
-    return np.dot(np.linalg.inv(R1), R1)
-
-def PoseStamped_to_Numpyarray(msg):
-    Tvec = np.array([msg.position.x, msg.position.y, msg.position.z], dtype = 'float')
-    Quat = np.array([msg.orientation.x, msg.orientation.y, msg.orientation.z, msg.orientation.w], dtype = 'float')
-    TQ = np.array([msg.position.x, msg.position.y, msg.position.z, msg.orientation.x, msg.orientation.y, msg.orientation.z, msg.orientation.w], dtype = 'float')
-    return Tvec, Quat, TQ
+from ar_func import PoseStamped_to_Numpyarray, compare_Rmatrix
 
 def callback(poses):
     robot_pose = poses.robot
@@ -39,7 +31,6 @@ def callback(poses):
         stop_order.id = ""
         pub.publish(stop_order)
         print("ROBOT STOP")
-
 
 def main():
     try:

@@ -8,14 +8,7 @@ import numpy as np
 import cv2.aruco as aruco
 from geometry_msgs.msg import PoseStamped
 from tf.transformations import quaternion_from_matrix
-
-def RotationVectorToQuaternion(rvecs):
-    rvecs = np.squeeze(rvecs)
-    R = cv2.Rodrigues(rvecs)[0]
-    R = np.vstack((R, np.zeros(R.shape[1])))
-    R = np.hstack((R, np.hstack([0,0,0,1])[np.newaxis, :].T))
-    q = quaternion_from_matrix(R)
-    return q
+from ar_func import RotationVectorToQuaternion
 
 def pub_data(rvecs, tvecs):
     q = RotationVectorToQuaternion(rvecs)
@@ -42,16 +35,16 @@ def detect_marker(frame, mtx, dist, dictionary, marker_size=0.184):
 
 def draw_marker(frame, ids, mtx, dist, rvecs, tvecs):
     for i in range(ids.size):
-        aruco.drawAxis(frame, mtx, dist, rvecs[i], tvecs[i], 0.1)
-        rvecs = np.squeeze(rvecs)
-        R = cv2.Rodrigues(rvecs)[0]
-        tvecs = np.squeeze(tvecs)
-        T = tvecs[np.newaxis, :].T
+        r = np.squeeze(rvecs[i])
+        t = np.squeeze(tvecs[i])
+        aruco.drawAxis(frame, mtx, dist, r, t, 0.1)
+        R = cv2.Rodrigues(r)[0]
+        T = t[np.newaxis, :].T
         proj_matrix = np.hstack((R, T))
         euler_angle = cv2.decomposeProjectionMatrix(proj_matrix)[6] # [deg]
-        cv2.putText(frame, "X: %.1f cm" % (tvecs[0] * 100),  (0, 30), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0, 0, 0))
-        cv2.putText(frame, "Y: %.1f cm" % (tvecs[1] * 100),  (0, 60), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0, 0, 0))
-        cv2.putText(frame, "Z: %.1f cm" % (tvecs[2] * 100),  (0, 90), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0, 0, 0))
+        cv2.putText(frame, "X: %.1f cm" % (t[0] * 100),  (0, 30), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0, 0, 0))
+        cv2.putText(frame, "Y: %.1f cm" % (t[1] * 100),  (0, 60), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0, 0, 0))
+        cv2.putText(frame, "Z: %.1f cm" % (t[2] * 100),  (0, 90), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0, 0, 0))
         cv2.putText(frame, "R: %.1f deg" % (euler_angle[0]),  (0, 130), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0, 0, 0))
         cv2.putText(frame, "P: %.1f deg" % (euler_angle[1]),  (0, 150), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0, 0, 0))
         cv2.putText(frame, "Y: %.1f deg" % (euler_angle[2]),  (0, 180), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0, 0, 0))
@@ -59,7 +52,7 @@ def draw_marker(frame, ids, mtx, dist, rvecs, tvecs):
 
 def callback(msg):
     cv_image = bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
-    ids, rvecs, tvecs = detect_marker(cv_image, mtx, dist, dictionary)
+    ids, rvecs, tvecs = detect_marker(cv_image, mtx, dist, dictionary, 0.2 )
     if ids is None:
         print("not found Markers")
     else:

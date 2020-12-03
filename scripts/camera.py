@@ -15,6 +15,9 @@ def main():
         cap.set(cv2.CAP_PROP_FPS, 10)
         cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
         cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
+        #cap.set(cv2.CAP_PROP_FRAME_WIDTH, 960)
+        #cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 540)
+
         ret, frame = cap.read()
         while not rospy.is_shutdown():
             if ret == False:

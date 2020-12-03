@@ -11,18 +11,9 @@ import os
 from geometry_msgs.msg import PoseStamped
 from eams_msgs.msg import Control
 from iot_msgs.msg import Point2
+from ar_func import PoseStamped_to_Numpyarray, compare_Rmatrix
 
 flg = False
-
-def compare_Rmatrix(R1, R2):
-    return np.dot(np.linalg.inv(R1), R1)
-
-def PoseStamped_to_Numpyarray(msg):
-    Tvec = np.array([msg.position.x, msg.position.y, msg.position.z], dtype = 'float')
-    Quat = np.array([msg.orientation.x, msg.orientation.y, msg.orientation.z, msg.orientation.w], dtype = 'float')
-    TQ = np.array([msg.position.x, msg.position.y, msg.position.z, msg.orientation.x, msg.orientation.y, msg.orientation.z, msg.orientation.w], dtype = 'float')
-    return Tvec, Quat, TQ
-
 def callback(poses):
     global flg
     if flg:

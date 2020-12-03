@@ -1,7 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 import rospy
-import csv
 import cv2
 import datetime
 import numpy as np
@@ -9,12 +8,7 @@ import tf
 import os
 from sklearn.cluster import KMeans
 from geometry_msgs.msg import PoseStamped
-
-def read_csv(name):
-    csv_obj = csv.reader(open(name, "r"))
-    l = [row for row in csv_obj]
-    ary = np.array(l)
-    return np.delete(ary, 0, 1)
+from ar_func import read_csv
 
 def get_weight_position(pos_array):
     kmeans = KMeans(n_clusters=3).fit(pos_array)

@@ -9,17 +9,9 @@ from geometry_msgs.msg import PoseStamped, PoseWithCovarianceStamped
 from actionlib_msgs.msg import GoalStatusArray
 import os
 import datetime
+from ar_func import PoseStampedToText
 
-def PoseStampedToText(count, msg):
-    buf = str(count) + " ,"
-    buf = buf + str(msg.pose.position.x) + " ,"
-    buf = buf + str(msg.pose.position.y) + " ,"
-    buf = buf + str(msg.pose.position.z) + " ,"
-    buf = buf + str(msg.pose.orientation.x) + " ,"
-    buf = buf + str(msg.pose.orientation.y) + " ,"
-    buf = buf + str(msg.pose.orientation.z) + " ,"
-    buf = buf + str(msg.pose.orientation.w) + "\n"
-    return buf
+
 
 def report():
     global count

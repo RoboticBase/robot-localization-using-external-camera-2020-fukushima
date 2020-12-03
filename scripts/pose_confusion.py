@@ -59,10 +59,11 @@ def main():
     try:
         rospy.init_node(NODE_NAME)
         #rospy.Subscriber("/mavros/local_position/pose", PoseStamped, mini2_cb, queue_size=10)
-        rospy.Subscriber("/AR/init_pose", PoseStamped, mini2_cb, queue_size=10)
-        rospy.Subscriber("/AR/confution_pose/position", Point, pose_cb, queue_size=10)
-        rospy.Subscriber("/AR/confution_pose/degree", Float32, degree_cb, queue_size=10)
-        rospy.Subscriber("/AR/confution_pose/orientation", Quaternion, orient_cb, queue_size=10)
+        #rospy.Subscriber("/AR/init_pose", PoseStamped, mini2_cb, queue_size=10)
+        rospy.Subscriber("/RB/estimated_pose", PoseStamped, mini2_cb, queue_size=10)
+        rospy.Subscriber("/RB/confution_pose/position", Point, pose_cb, queue_size=10)
+        rospy.Subscriber("/RB/confution_pose/degree", Float32, degree_cb, queue_size=10)
+        rospy.Subscriber("/RB/confution_pose/orientation", Quaternion, orient_cb, queue_size=10)
         rospy.spin()
     except rospy.ROSInterruptException:
         pass
@@ -70,7 +71,7 @@ def main():
 if __name__ == '__main__':
     try:
         NODE_NAME = 'pose_confusion'
-        pub = rospy.Publisher("/AR/confution_pose", PoseStamped, queue_size=10)
+        pub = rospy.Publisher("/RB/confution_pose", PoseStamped, queue_size=10)
         error = Pose()
         error.orientation.w = 1.0
         main()

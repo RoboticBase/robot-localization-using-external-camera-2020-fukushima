@@ -13,6 +13,7 @@ from iot_msgs.msg import Point2
 
 def table_title():
     buf = "count" + " ,"
+    buf = buf + "sec" + " ,"
     buf = buf + "robot_dir_x" + " ,"
     buf = buf + "robot_dir_y" + " ,"
     buf = buf + "robot_dir_z" + " ,"
@@ -33,7 +34,9 @@ def callback(poses):
     global count
     robot_pose = poses.robot
     estimated_pose = poses.camera
+    sec = rospy.Time.now().to_sec()
     buf = str(count) + " ,"
+    buf = buf + str(sec) + " ,"
     buf = buf + str(robot_pose.position.x) + " ,"
     buf = buf + str(robot_pose.position.y) + " ,"
     buf = buf + str(robot_pose.position.z) + " ,"
@@ -50,6 +53,7 @@ def callback(poses):
     buf = buf + str(estimated_pose.orientation.w) + "\n"
     with open(file_path, mode='a') as f:
         f.write(buf)
+    print("record", count)
     count+=1
 
 def main():

@@ -12,6 +12,7 @@ from iot_msgs.msg import Point2
 
 def table_title():
     buf = "count" + " ,"
+    buf = buf + "sec" + " ,"
     buf = buf + "dir_x" + " ,"
     buf = buf + "dir_y" + " ,"
     buf = buf + "dir_z" + " ,"
@@ -32,16 +33,18 @@ def callback(poses):
     global count
     robot_pose = poses.robot
     estimated_pose = poses.camera
-    diff_x = abs(robot_pose.position.x - estimated_pose.position.x)
-    diff_y = abs(robot_pose.position.y - estimated_pose.position.y)
-    diff_z = abs(robot_pose.position.z - estimated_pose.position.z)
+    diff_x = robot_pose.position.x - estimated_pose.position.x
+    diff_y = robot_pose.position.y - estimated_pose.position.y
+    diff_z = robot_pose.position.z - estimated_pose.position.z
     _, QuatR, _ = PoseStamped_to_Numpyarray(robot_pose)
     _, QuatE, _ = PoseStamped_to_Numpyarray(estimated_pose)
     Rr = quaternion_matrix(QuatR)[:3,:3]
     Re = quaternion_matrix(QuatE)[:3,:3]
     diff_rad = euler_from_matrix(compare_Rmatrix(Rr, Re))[2]
     diff_deg = diff_rad * 180 / math.pi
+    sec = rospy.Time.now().to_sec()
     buf = str(count) + " ,"
+    buf = buf + str(sec) + " ,"
     buf = buf + str(diff_x) + " ,"
     buf = buf + str(diff_y) + " ,"
     buf = buf + str(diff_z) + " ,"
@@ -49,6 +52,8 @@ def callback(poses):
     buf = buf + str(diff_deg) + "\n"
     with open(diff_path, mode='a') as f:
         f.write(buf)
+    print("record", count)
+
     count+=1
 
 def main():

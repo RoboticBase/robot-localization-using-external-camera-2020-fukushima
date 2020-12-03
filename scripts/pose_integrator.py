@@ -28,7 +28,7 @@ def main():
     try:
         rospy.init_node(NODE_NAME)
 
-        robot_pose_sub = message_filters.Subscriber("/AR/confution_pose", PoseStamped)
+        robot_pose_sub = message_filters.Subscriber("/RB/confution_pose", PoseStamped)
         camera_pose_sub = message_filters.Subscriber("/AR/estimated_pose", PoseStamped)
 
         ts = message_filters.ApproximateTimeSynchronizer([robot_pose_sub, camera_pose_sub], 10, slop, allow_headerless=True)

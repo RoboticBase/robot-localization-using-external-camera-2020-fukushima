@@ -11,17 +11,7 @@ from actionlib_msgs.msg import GoalStatusArray
 from std_msgs.msg import String
 import os
 import datetime
-
-def PoseStampedToText(count, msg):
-    buf = str(count) + " ,"
-    buf = buf + str(msg.pose.position.x) + " ,"
-    buf = buf + str(msg.pose.position.y) + " ,"
-    buf = buf + str(msg.pose.position.z) + " ,"
-    buf = buf + str(msg.pose.orientation.x) + " ,"
-    buf = buf + str(msg.pose.orientation.y) + " ,"
-    buf = buf + str(msg.pose.orientation.z) + " ,"
-    buf = buf + str(msg.pose.orientation.w) + "\n"
-    return buf
+from ar_func import PoseStampedToText
 
 def callback(msg):
     global count

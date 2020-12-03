@@ -21,7 +21,6 @@ def callback(state):
         pub_start_cmd()
     prev_status = state.status
 
-
 def main():
     try:
         rospy.init_node(NODE_NAME)

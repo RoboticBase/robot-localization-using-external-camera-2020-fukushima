@@ -6,7 +6,6 @@ from sensor_msgs.msg import Image
 from cv_bridge import CvBridge
 
 def callback(msg):
-
     cv_image = bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
     dst = cv2.undistort(cv_image, intrinsic, distortion)
     image_message = bridge.cv2_to_imgmsg(dst, encoding="bgr8")
