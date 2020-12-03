@@ -161,9 +161,9 @@ def main():
     rospy.init_node('iot_consumer', anonymous=True, disable_signals=True)
     params = wrap_namespace(rospy.get_param('~'))
 
-    control_pub = rospy.Publisher(params.topic.control_cmd, Control, queue_size=1)
-    mission_pub = rospy.Publisher(params.topic.mission_cmd, Mission, queue_size=1)
-    cmdexe_pub = rospy.Publisher(params.topic.navi_cmdexe, String, queue_size=1)
+    control_pub = rospy.Publisher(params.topic.control_cmd, Control, queue_size=10)
+    mission_pub = rospy.Publisher(params.topic.mission_cmd, Mission, queue_size=10)
+    cmdexe_pub = rospy.Publisher(params.topic.navi_cmdexe, String, queue_size=10)
 
     naviCommand = NaviCommand(control_pub, mission_pub, cmdexe_pub)
     dispatcher = Dispatcher(naviCommand)
