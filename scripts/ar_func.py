@@ -28,6 +28,7 @@ def read_csv(name):
     ary = np.array(l)
     return np.delete(ary, 0, 1)
 
+
 def PoseStampedToText(count, msg):
     buf = str(count) + " ,"
     buf = buf + str(msg.pose.position.x) + " ,"
@@ -39,3 +40,13 @@ def PoseStampedToText(count, msg):
     buf = buf + str(msg.pose.orientation.w) + "\n"
     return buf
 
+
+def PoseToText(count, msg1, msg2):
+    buf = str(count) + " ,"
+    buf = buf + str(msg1.position.x) + " ,"
+    buf = buf + str(msg1.position.y) + " ,"
+    buf = buf + str(msg1.position.z) + " ,"
+    buf = buf + str(msg2.position.x) + " ,"
+    buf = buf + str(msg2.position.y) + " ,"
+    buf = buf + str(msg2.position.z) + "\n"
+    return buf
