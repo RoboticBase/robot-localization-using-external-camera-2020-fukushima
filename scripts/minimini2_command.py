@@ -6,11 +6,12 @@ from eams_msgs.msg import State, Control, Mission, Detail
 from std_msgs.msg import Header, Float64
 from sensor_msgs.msg import NavSatFix
 
-one_meter = 0.000012
-halfmeter = 0.000006
-length =    halfmeter
+ONE_METER = 0.000008999#0.000012
+halfmeter = ONE_METER / 2.0
+length =    ONE_METER
 
-fields = "AICT" #"LICTIA"
+#fields = "AICT" 
+fields = "LICTIA"
 
 def mini2_start():
     h = Header()
@@ -38,31 +39,33 @@ def mini2_turn():
     detail.lng = 0
     return detail
 
-def aict_waypoint(lat ,lng, deg):
-    wp1 = mini2_waypoint(lat + halfmeter, lng + 0.0, 0.05) # waypoint 1
-    wp2 = mini2_waypoint(lat + 0.0, lng + 0.0, 0.05) # waypoint 2
+def aict_waypoint(lat ,lng, deg, vel):
+    wp1 = mini2_waypoint(lat + halfmeter, lng + 0.0, vel) 
+    wp2 = mini2_waypoint(lat + 0.0, lng + 0.0, vel)
     wp3 = mini2_turn() # turn
     return [wp1, wp2, wp3]
 
-def lictia_waypoint(lat ,lng):
-    wp1 = mini2_waypoint(lat + one_meter, lng + 0.0, 0.05) # waypoint 1
-    wp2 = mini2_waypoint(lat + one_meter, lng + one_meter, 0.05) # waypoint 2
-    wp3 = mini2_waypoint(lat - one_meter, lng + one_meter, 0.05) # waypoint 2
-    wp4 = mini2_waypoint(lat - one_meter, lng - one_meter, 0.05) # waypoint 2
-    wp5 = mini2_waypoint(lat + one_meter, lng - one_meter, 0.05) # waypoint 2
-    wp6 = mini2_waypoint(lat + one_meter, lng + 0.0, 0.05) # waypoint 2
-    wp7 = mini2_waypoint(lat + 0.0, lng + 0.0, 0.05) # waypoint 2
+def lictia_waypoint(lat ,lng, deg, vel):
+    wp1 = mini2_waypoint(lat + length, lng + 0.0, vel) 
+    wp2 = mini2_waypoint(lat + length, lng + length, vel) 
+    wp3 = mini2_waypoint(lat - length, lng + length, vel) 
+    wp4 = mini2_waypoint(lat - length, lng - length, vel)
+    wp5 = mini2_waypoint(lat + length, lng - length, vel)
+    wp6 = mini2_waypoint(lat + length, lng + 0.0, vel)
+    wp7 = mini2_waypoint(lat + 0.0, lng + 0.0, vel)
     wp8 = mini2_turn() # turn
     return [wp1, wp2, wp3, wp4, wp5, wp6, wp7, wp8]
+    #return [wp1, wp2]
 
-def pub_waypoint(lat ,lng, deg):
+
+def pub_waypoint(lat ,lng, deg, vel):
     mission = Mission()
     mission.header.frame_id = "map"
     mission.header.stamp = rospy.Time.now()
     if fields == "AICT":
-        mission.details = aict_waypoint(lat ,lng, deg)
+        mission.details = aict_waypoint(lat ,lng, deg, vel))
     if fields == "LICTIA":
-        mission.details = lictia_waypoint(lat ,lng)
+        mission.details = lictia_waypoint(lat ,lng, deg, vel))
     pub1.publish(mission)
 '''
 def callback(state):
@@ -91,8 +94,8 @@ if __name__ == '__main__':
         print(msg.latitude)
         print(msg.longitude)
         print(deg.data)
-        pub_waypoint(msg.latitude, msg.longitude, deg.data / 180 * math.pi)
-        rospy.sleep(2.0)
+        pub_waypoint(msg.latitude, msg.longitude, deg.data / 180 * math.pi, 0.03)
+        rospy.sleep(5.0)
         mini2_start()
         #main()
     except KeyboardInterrupt:
