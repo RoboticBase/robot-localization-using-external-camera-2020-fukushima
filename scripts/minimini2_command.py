@@ -55,6 +55,7 @@ def lictia_waypoint(lat ,lng, deg, vel):
     wp7 = mini2_waypoint(lat + 0.0, lng + 0.0, vel)
     wp8 = mini2_turn() # turn
     return [wp1, wp2, wp3, wp4, wp5, wp6, wp7, wp8]
+    #return [wp1, wp2, wp4, wp7, wp8]
     #return [wp1, wp2]
 
 
@@ -63,9 +64,9 @@ def pub_waypoint(lat ,lng, deg, vel):
     mission.header.frame_id = "map"
     mission.header.stamp = rospy.Time.now()
     if fields == "AICT":
-        mission.details = aict_waypoint(lat ,lng, deg, vel))
+        mission.details = aict_waypoint(lat ,lng, deg, vel)
     if fields == "LICTIA":
-        mission.details = lictia_waypoint(lat ,lng, deg, vel))
+        mission.details = lictia_waypoint(lat ,lng, deg, vel)
     pub1.publish(mission)
 '''
 def callback(state):
@@ -95,8 +96,8 @@ if __name__ == '__main__':
         print(msg.longitude)
         print(deg.data)
         pub_waypoint(msg.latitude, msg.longitude, deg.data / 180 * math.pi, 0.03)
-        rospy.sleep(5.0)
-        mini2_start()
+        #rospy.sleep(5.0)
+        #mini2_start()
         #main()
     except KeyboardInterrupt:
         pass
