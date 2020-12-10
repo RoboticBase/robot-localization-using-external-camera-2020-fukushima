@@ -6,7 +6,9 @@ from std_msgs.msg import String, Float32
 from geometry_msgs.msg import Point, Quaternion
 
 def main():
-    rospy.init_node('talker', anonymous=True)
+    rospy.init_node(NODE_NAME, anonymous=True)
+    rospy.loginfo("Publish to the confution_pose %s", rospy.Time.now())
+
     error_direction = rospy.get_param('~direction')
     error_value = rospy.get_param('~value')
     type_list = [ "position", "orientation" ]
@@ -43,8 +45,8 @@ def main():
                 error_pose.y += error_value
             if error_direction == "z":
                 error_pose.z += error_value
-            pub_pose.publish('error_generator add the pose: ', error_pose)
-            rospy.loginfo(error_pose)
+            pub_pose.publish(error_pose)
+            #rospy.loginfo('error_generator add the pose: ', error_pose)
         r.sleep()
 
 if __name__ == '__main__':
