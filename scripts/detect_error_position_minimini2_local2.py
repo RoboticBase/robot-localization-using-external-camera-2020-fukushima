@@ -14,10 +14,11 @@ from iot_msgs.msg import Point2
 from ar_func import PoseStamped_to_Numpyarray, compare_Rmatrix
 
 flg = False
+count = 0
 def stop_command():
     stop_order = Control()
-    stop_order.header.stamp = rospy.Time.now()
-    stop_order.header.frame_id = "stop"
+    #stop_order.header.stamp = rospy.Time.now()
+    #stop_order.header.frame_id = "stop"
     stop_order.command = 0
     return stop_order
 
@@ -27,6 +28,7 @@ def pub_stop():
 
 def callback(poses):
     global flg
+    global count
     if flg:
         pub_stop()
         return
@@ -67,7 +69,6 @@ if __name__ == '__main__':
         degree_threshold = rospy.get_param("degree_threshold")
         count_threshold = rospy.get_param("count_threshold")
         pub = rospy.Publisher("/command/control", Control, queue_size=10)
-        count = 0
         main()
 
     except KeyboardInterrupt:
