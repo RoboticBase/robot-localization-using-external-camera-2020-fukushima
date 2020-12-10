@@ -99,8 +99,6 @@ def callback(msg, args):
     #print(inputTQ)
     translate_matrix = args
     Est_Quat, Est_pos = estimate(translate_matrix, inputTQ)
-    p = PoseStamped()
-    p.header.frame_id = "estimate"
     p.header.stamp = rospy.Time.now()
     p.pose.position.x = Est_pos[0]
     p.pose.position.y = Est_pos[1]
@@ -109,7 +107,6 @@ def callback(msg, args):
     p.pose.orientation.y = Est_Quat[1]
     p.pose.orientation.z = Est_Quat[2]
     p.pose.orientation.w = Est_Quat[3]
-    pub = rospy.Publisher("/AR/estimated_pose", PoseStamped, queue_size=10)
     pub.publish(p)
 
 def reverse_xy(pose_quat):
@@ -136,6 +133,7 @@ def latest_dir(path, head_str):
 def main():
     try:
         rospy.init_node(NODE_NAME)
+        pub = rospy.Publisher("/AR/estimated_pose", PoseStamped, queue_size=10)
         rospy.Subscriber("AR/camera_pose", PoseStamped, callback, translate_matrix, queue_size=10)
         rospy.spin()
     except rospy.ROSInterruptException:
@@ -167,6 +165,8 @@ if __name__ == '__main__':
             print("estimate[quat]: ", Est_Quat, ", real[quat]: ", robot_pose[3:])
             #print("estimate[rad]: ", Est_euler, ", real[rad]: ", robot_euler)
             #print("estimate[deg]: ", [deg * 180 / math.pi for deg in Est_euler], ", real[deg]: ", [deg * 180 / math.pi for deg in robot_euler])
+        p = PoseStamped()
+        p.header.frame_id = "estimate" 
         main()
     except KeyboardInterrupt:
         pass
