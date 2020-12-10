@@ -5,5 +5,4 @@
   <param name="degree_threshold" type="double"    value="5.0"/>
   <param name="count_threshold" type="int"    value="10"/>
   <node name="detect_error_position" pkg="rpl" type="detect_error_position_minimini2_local.py" output="screen"/>
-
 </launch>

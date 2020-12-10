@@ -23,6 +23,7 @@ def stop_command():
 
 def pub_stop():
     pub.publish(stop_command())
+    print("ROBOT STOP")
 
 def callback(poses):
     global flg
@@ -43,11 +44,14 @@ def callback(poses):
 
     if diff_x >= meter_threshold or diff_y >= meter_threshold or diff_yaw >= radian_threshold:
         print("ERROR", count, diff_x, diff_y, diff_deg)
-        pub_stop()
-        flg = True
+        count += 1
     else:
         print("COMPARE", diff_x, diff_y, diff_deg)
-
+        count = 0
+        #flg = False
+    if count > count_threshold:
+        pub_stop()
+        flg = True
 def main():
     try:
         rospy.init_node(NODE_NAME)
@@ -61,7 +65,9 @@ if __name__ == '__main__':
         NODE_NAME = 'detect_error_position'
         meter_threshold = rospy.get_param("meter_threshold")
         degree_threshold = rospy.get_param("degree_threshold")
+        count_threshold = rospy.get_param("count_threshold")
         pub = rospy.Publisher("/command/control", Control, queue_size=10)
+        count = 0
         main()
 
     except KeyboardInterrupt:
