@@ -107,7 +107,7 @@ def PoseStamped_to_Numpyarray2(msg):
     return Tvec, Quat, TQ
 
 def compare_Rmatrix(R1, R2):
-    return np.dot(np.linalg.inv(R1), R1)
+    return np.dot(np.linalg.inv(R1), R2)
 
 def latest_file(path, head_str, last_str):
     latest_time = datetime.datetime.min
