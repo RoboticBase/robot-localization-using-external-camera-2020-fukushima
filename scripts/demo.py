@@ -3,7 +3,7 @@
 import rospy
 import numpy as np
 from geometry_msgs.msg import PoseStamped
-from ar_func import read_csv
+from ar_func import read_csv2
 from ar_func import quaternion_to_vector
 from ar_func import PoseStamped_to_Numpyarray
 from ar_func import estimate
@@ -35,7 +35,7 @@ def main():
 if __name__ == '__main__':
     try:
         NODE_NAME = 'demo'
-        pose_file = "/home/rb/camera_ws/src/rpl/config/log_image_robot/Pose_2020-12-11_162050/"+ "tmatrix_f_rb.csv"
+        pose_file = "/home/minipc1/camera_ws/src/camera-controller/config/log_image_robot/Pose_2020-12-14_134019/"+ "tmatrix_f_rb.csv"
         tmatrix = read_csv2(pose_file)
         translate_matrix = tmatrix.astype(np.float32)
         print(translate_matrix)
