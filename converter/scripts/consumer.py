@@ -1,27 +1,24 @@
-import os
-
 import rospy
 
 from handler import Handler
-
-host = os.environ.get('AMQP_HOST', 'localhost')
-port = int(os.environ.get('AMQP_PORT', '5672'))
-use_tls = os.environ.get('AMQP_USE_TLS', 'False').lower() == 'true'
-username = os.environ.get('AMQP_RECEIVER_USERNAME', 'ANONYMOUS')
-password = os.environ.get('AMQP_RECEIVER_PASSWORD', '')
-queue = os.environ.get('AMQP_RECEIVE_QUEUE', 'examples')
+from utils import wrap_namespace
 
 
 class Consumer(Handler):
     def __init__(self, callback):
-        super().__init__(host, port, use_tls, username, password,
+        self._params = wrap_namespace(rospy.get_param('~'))
+        super().__init__(self._params.amqp.host,
+                         self._params.amqp.port,
+                         self._params.amqp.use_tls,
+                         self._params.amqp.username,
+                         self._params.amqp.password,
                          auto_accept=False)
         rospy.loginfo('init Consumer')
         self.callback = callback
 
     def _on_start(self, event):
         rospy.loginfo('start Consumer')
-        return event.container.create_receiver(self.connection, queue)
+        return event.container.create_receiver(self.connection, self._params.amqp.queue)
 
     def on_message(self, event):
         msg = event.message.body
