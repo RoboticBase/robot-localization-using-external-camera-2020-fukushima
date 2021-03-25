@@ -1,0 +1,6 @@
+<launch>
+  <param name="calibration_path" value="$(find rpl)/config/camera.xml" />
+
+  <node name="camera" pkg="rpl" type="camera.py" output="screen"/>
+  <node name="calibration" pkg="rpl" type="calibration.py" output="screen"/>
+</launch>

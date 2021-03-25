@@ -1,0 +1,9 @@
+<launch>
+  <param name="calibration_path" value="$(find rpl)/config/camera.xml" />
+  <param name="file_path" value="$(find rpl)/config/source_position/"/>
+  <param name="meter_threshold" type="double"    value="0.5"/>
+  <param name="degree_threshold" type="double"    value="10.0"/>
+  <param name="count_threshold" type="int"    value="10"/>
+  <node name="detect_error_position" pkg="rpl" type="detect_error_position_minimini2_local.py" output="screen"/>
+
+</launch>

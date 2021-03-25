@@ -1,0 +1,4 @@
+PyYAML==5.3.1
+rospkg==1.2.8
+python-qpid-proton==0.31.0
+pillow==7.2.0
