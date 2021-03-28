@@ -1,5 +1,0 @@
-<launch>
-  <param name="output_path" value="$(find rpl)/config/output_position/"/>
-  <node name="point2_record" pkg="rpl"  type="point2_record.py" output="screen"/>
-  <node name="point2_diff_record" pkg="rpl"  type="point2_diff_record.py" output="screen"/>
-</launch>

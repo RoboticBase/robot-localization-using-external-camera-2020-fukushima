@@ -1,3 +1,0 @@
-<launch>
-  <node name="camera" pkg="rpl" type="camera.py" output="screen"/>
-</launch>

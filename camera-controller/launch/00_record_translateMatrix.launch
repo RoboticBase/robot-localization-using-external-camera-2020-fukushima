@@ -1,7 +1,0 @@
-<launch>
-  <param name="calibration_path" value="$(find rpl)/config/camera.xml" />
-  <param name="file_path" value="$(find rpl)/config/source_position/"/>
-  <param name="matrix_path" value="$(find rpl)/config/translate_matrix/"/>
-
-  <node name="create_matrix" pkg="rpl"  type="create_matrix.py" output="screen"/>
-</launch>

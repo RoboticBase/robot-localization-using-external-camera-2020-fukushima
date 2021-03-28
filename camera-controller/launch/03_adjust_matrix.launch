@@ -1,7 +1,0 @@
-<launch>
-  <param name="matrix_path" value="$(find rpl)/config/translate_matrix/"/>
-  <param name="record_path" value="$(find rpl)/config/output_position/"/>
-  <param name="adjust_path" value="$(find rpl)/config/adjust_matrix/"/>
-  <node name="adjust_matrix" pkg="rpl" type="adjust_matrix.py" output="screen"/>
-
-</launch>

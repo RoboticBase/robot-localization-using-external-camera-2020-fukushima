@@ -1,4 +1,0 @@
-<launch>
-  <include file="$(find rpl)/launch/03_detect_error_position_minimini2_local.launch" />
-  <include file="$(find alert_player)/launch/alert_player.launch" />
-</launch>

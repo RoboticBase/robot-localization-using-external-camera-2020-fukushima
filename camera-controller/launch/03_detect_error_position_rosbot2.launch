@@ -1,8 +1,0 @@
-<launch>
-  <param name="calibration_path" value="$(find rpl)/config/camera.xml" />
-  <param name="file_path" value="$(find rpl)/config/source_position/"/>
-  <param name="meter_threshold" type="double"    value="0.5"/>
-  <param name="degree_threshold" type="double"    value="5.0"/>
-  <node name="detect_error_position" pkg="rpl" type="detect_error_position_rosbot2.py" output="screen"/>
-
-</launch>

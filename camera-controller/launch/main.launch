@@ -1,7 +1,0 @@
-<launch>
-  <!-- CAMERA  -->
-  <include file="$(find robot_camera)/launch/ar.launch" />
-  <machine name="rosbot" address="tis-rosbot2-02" env-loader="/home/husarion/ros_workspace/devel/env.sh" user="husarion"  password="husarion" default="true" />
-  <include file="$(find robot_camera)/launch/remote_robot.launch" />
-</launch>
-

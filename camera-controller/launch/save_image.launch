@@ -1,7 +1,0 @@
-<launch>
-  <param name="filename_format" value="$(find rpl)/config/images/frame%04d.jpg" />
-  <node name="camera" pkg="rpl" type="camera.py" output="screen"/>
-  <node name="save_image" pkg="laser_control" type="camera360onMouse.py" output="screen">
-    <remap from="image" to="image_raw" />
-  </node>
-</launch>
