@@ -1,0 +1,3 @@
+[submodule "camera-controller"]
+	path = camera-controller
+	url = https://github.com/RoboticBase/camera-controller
