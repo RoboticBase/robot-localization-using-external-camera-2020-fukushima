@@ -1,3 +1,6 @@
 [submodule "camera-controller"]
 	path = camera-controller
 	url = https://github.com/RoboticBase/camera-controller
+[submodule "camera-controller_PoC2020iot"]
+	path = camera-controller_PoC2020iot
+	url = https://github.com/RoboticBase/camera-controller_PoC2020iot
