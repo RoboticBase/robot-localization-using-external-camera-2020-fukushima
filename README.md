@@ -11,8 +11,10 @@ These softwares were developed by a subsidized project of the robot industries i
 ## ROS packages
 * [ROS client](/amqp-ros-client/)
     * A ROS package that consumes messages from a management system and publishes them to the autonomous mobile robot, and that subscribes messages from the robot and produces them to the management system.
-* [Camera Controller](/camera-controller)
-    * A ROS package that launches external camera system.
+* [Camera Controller](https://github.com/RoboticBase/camera-controller)
+    * A common package that launches external camera in ROS environment.
+* [Camera Controller for PoC 2020](https://github.com/RoboticBase/camera-controller_PoC2020iot)
+    * A specific package that verifies the external camera system in POC.
 
 ## License
 [Apache License 2.0](/LICENSE)
